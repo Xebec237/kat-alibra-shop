@@ -1,6 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import Image from 'next/image';
+import { PALETTE, getTeinte } from '@/lib/theme/palette';
+import { uploadLookbookMedia } from '@/lib/supabase/storage';
 import { Store, Phone, Check, Globe, MapPin, DollarSign, Image as ImageIcon } from 'lucide-react';
 import { Profile } from '@/lib/supabase/types';
 import { updateProfile } from '@/lib/actions/profile';
@@ -21,6 +24,11 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
   const [ville, setVille] = useState(profile.ville || 'Douala');
   const [adresse, setAdresse] = useState(profile.adresse || '');
   const [devise, setDevise] = useState(profile.devise || 'FCFA');
+  const [couleur, setCouleur] = useState(profile.couleur_theme || 'olive');
+  const [mediaUrl, setMediaUrl] = useState(profile.lookbook_media_url);
+  const [mediaType, setMediaType] = useState(profile.lookbook_media_type);
+  const [isUploading, setIsUploading] = useState(false);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
   const [isSaved, setIsSaved] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
@@ -42,6 +50,9 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
       ville,
       adresse,
       devise,
+      couleur_theme: couleur,
+      lookbook_media_url: mediaUrl,
+      lookbook_media_type: mediaType,
     });
 
     setIsSaving(false);
@@ -176,6 +187,175 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
             onChange={(e) => setAdresse(e.target.value)}
             placeholder="Ex: Akwa, Rue Prince Bell"
           />
+        </Card>
+
+        {/* Apparence de la vitrine */}
+        <Card className="space-y-5">
+          <h2 className="font-bold text-sm text-[#2E2C24] font-display border-b border-[#E4DAC4]/60 pb-2">
+            4. Apparence de votre vitrine
+          </h2>
+
+          {/* Nuancier */}
+          <div className="space-y-2.5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#726C5C]">
+                Couleur de votre boutique
+              </p>
+              <p className="text-[11px] text-[#9B9484] mt-0.5">
+                Elle habille les boutons, les prix et les éléments sélectionnés
+                de votre catalogue.
+              </p>
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
+              {PALETTE.map((t) => {
+                const choisie = t.id === couleur;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setCouleur(t.id)}
+                    title={t.nom}
+                    aria-label={`Couleur ${t.nom}`}
+                    aria-pressed={choisie}
+                    className={`shrink-0 w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${
+                      choisie
+                        ? 'border-[#2E2C24] scale-105'
+                        : 'border-transparent hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: t.clair }}
+                  >
+                    <span
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: t.principal }}
+                    >
+                      {choisie ? <Check className="w-3.5 h-3.5 text-white" /> : null}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Aperçu : voir la teinte appliquée évite d'avoir à enregistrer
+                puis ouvrir la vitrine pour juger du résultat. */}
+            <div
+              className="rounded-2xl p-3.5 flex items-center justify-between gap-3 border"
+              style={{
+                backgroundColor: getTeinte(couleur).clair,
+                borderColor: getTeinte(couleur).bordure,
+              }}
+            >
+              <div className="min-w-0">
+                <p
+                  className="text-xs font-bold truncate"
+                  style={{ color: getTeinte(couleur).texteSurClair }}
+                >
+                  {getTeinte(couleur).nom}
+                </p>
+                <p className="text-[11px] text-[#726C5C]">Aperçu d&apos;un bouton</p>
+              </div>
+              <span
+                className="shrink-0 px-4 py-2 rounded-full text-white text-xs font-bold"
+                style={{ backgroundColor: getTeinte(couleur).principal }}
+              >
+                Commander
+              </span>
+            </div>
+          </div>
+
+          {/* Média du lookbook */}
+          <div className="space-y-2.5 pt-1 border-t border-[#E4DAC4]/60">
+            <div className="pt-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#726C5C]">
+                Visuel de votre lookbook
+              </p>
+              <p className="text-[11px] text-[#9B9484] mt-0.5">
+                Une photo ou une vidéo de 5 secondes maximum, affichée en bannière
+                sur votre vitrine. Sans visuel, la bannière garde son habillage
+                par défaut.
+              </p>
+            </div>
+
+            {mediaUrl ? (
+              <div className="relative rounded-2xl overflow-hidden border border-[#E4DAC4] bg-[#F6F1E7] aspect-[16/7]">
+                {mediaType === 'video' ? (
+                  <video
+                    src={mediaUrl}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                ) : (
+                  <Image src={mediaUrl} alt="" fill sizes="600px" className="object-cover" />
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMediaUrl(null);
+                    setMediaType(null);
+                  }}
+                  className="absolute top-2 right-2 px-3 py-1.5 rounded-full bg-[#2E2C24]/80 text-white text-[11px] font-bold hover:bg-[#2E2C24] transition-colors"
+                >
+                  Retirer
+                </button>
+
+                <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-[#2E2C24]/80 text-white text-[10px] font-semibold">
+                  {mediaType === 'video' ? 'Vidéo' : 'Photo'}
+                </span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => mediaInputRef.current?.click()}
+                disabled={isUploading}
+                className="w-full rounded-2xl border-2 border-dashed border-[#E4DAC4] bg-[#F6F1E7]/50 py-8 flex flex-col items-center justify-center gap-1.5 text-[#726C5C] hover:border-[#6B7A3D] hover:bg-[#EBF0DE]/40 transition-colors disabled:opacity-50"
+              >
+                <ImageIcon className="w-6 h-6 text-[#6B7A3D]" />
+                <span className="text-xs font-semibold">
+                  {isUploading ? 'Envoi en cours…' : 'Choisir une photo ou une vidéo'}
+                </span>
+                <span className="text-[10px] text-[#9B9484]">
+                  JPG, PNG, WebP · MP4, WebM, MOV — 5 s maximum
+                </span>
+              </button>
+            )}
+
+            <input
+              ref={mediaInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm,video/quicktime"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                setIsUploading(true);
+                setError(null);
+
+                const res = await uploadLookbookMedia(file, profile.id);
+                setIsUploading(false);
+                if (mediaInputRef.current) mediaInputRef.current.value = '';
+
+                if (!res.ok) {
+                  setError(res.error);
+                  return;
+                }
+
+                setMediaUrl(res.url);
+                setMediaType(res.type);
+              }}
+            />
+
+            {mediaUrl ? (
+              <p className="text-[11px] text-[#B98A2E] bg-[#FBF3DC] border border-[#EFE0B8] rounded-xl px-3 py-2">
+                N&apos;oubliez pas d&apos;enregistrer en bas de page pour appliquer
+                ce visuel à votre vitrine.
+              </p>
+            ) : null}
+          </div>
         </Card>
 
         {error ? (

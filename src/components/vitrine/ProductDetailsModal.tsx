@@ -173,7 +173,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`relative w-16 h-16 rounded-2xl overflow-hidden border-2 shrink-0 transition-all ${
                     selectedImageIndex === idx
-                      ? 'border-[#6B7A3D] scale-105'
+                      ? 'border-[var(--kat-accent,#6B7A3D)] scale-105'
                       : 'border-[#E4DAC4] opacity-70 hover:opacity-100'
                   }`}
                 >
@@ -223,7 +223,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 <span className="font-bold uppercase tracking-wider text-[#726C5C]">
                   Taille
                 </span>
-                <span className="text-[#6B7A3D] font-semibold">
+                <span className="text-[var(--kat-accent,#6B7A3D)] font-semibold">
                   Sélection : {selectedSize}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                       className={`min-w-[48px] h-11 px-3.5 rounded-2xl text-xs font-bold transition-all ${
                         isSelected
                           ? 'bg-[#2E2C24] text-white shadow-xs scale-105'
-                          : 'bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:border-[#6B7A3D]'
+                          : 'bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:border-[var(--kat-accent,#6B7A3D)]'
                       }`}
                     >
                       {size}
@@ -257,7 +257,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 <span className="font-bold uppercase tracking-wider text-[#726C5C]">
                   Couleurs
                 </span>
-                <span className="text-[#6B7A3D] font-semibold">
+                <span className="text-[var(--kat-accent,#6B7A3D)] font-semibold">
                   {selectedColor}
                 </span>
               </div>
@@ -315,7 +315,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             onClick={handleAddToCart}
             className="flex-1 h-12 rounded-2xl border-2 border-[#E4DAC4] bg-[#F6F1E7] text-[#2E2C24] font-bold text-xs sm:text-sm hover:bg-[#E4DAC4]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
           >
-            <ShoppingBag className="w-4 h-4 text-[#6B7A3D]" />
+            <ShoppingBag className="w-4 h-4 text-[var(--kat-accent,#6B7A3D)]" />
             <span>Ajouter au panier</span>
           </button>
 
@@ -323,7 +323,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             type="button"
             disabled={isOutOfStock}
             onClick={handleBuyNow}
-            className="flex-1 h-12 rounded-2xl bg-[#6B7A3D] text-white font-bold text-xs sm:text-sm hover:bg-[#54602F] shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+            className="flex-1 h-12 rounded-2xl bg-[var(--kat-accent,#6B7A3D)] text-white font-bold text-xs sm:text-sm hover:bg-[var(--kat-accent-fonce,#54602F)] shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-40"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Commander direct</span>

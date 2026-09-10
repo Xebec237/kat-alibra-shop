@@ -13,6 +13,9 @@ export const mockProfile: Profile = {
   adresse: 'Rue Prince Bell, Akwa',
   ville: 'Douala',
   pays: 'Cameroun',
+  couleur_theme: 'olive',
+  lookbook_media_url: null,
+  lookbook_media_type: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };

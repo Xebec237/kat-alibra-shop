@@ -92,7 +92,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onClick={() => onOpenDetails(product)}
           className="cursor-pointer space-y-1 mb-2"
         >
-          <h3 className="font-bold text-xs sm:text-sm text-[#2E2C24] line-clamp-1 hover:text-[#6B7A3D] transition-colors leading-snug">
+          <h3 className="font-bold text-xs sm:text-sm text-[#2E2C24] line-clamp-1 hover:text-[var(--kat-accent,#6B7A3D)] transition-colors leading-snug">
             {product.nom}
           </h3>
           {product.sizes && product.sizes.length > 0 ? (
@@ -121,7 +121,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:pointer-events-none ${
               isInCart
                 ? 'bg-[#EBF0DE] text-[#54602F] border border-[#6B7A3D]/40'
-                : 'bg-[#6B7A3D] text-white hover:bg-[#54602F]'
+                : 'bg-[var(--kat-accent,#6B7A3D)] text-white hover:bg-[var(--kat-accent-fonce,#54602F)]'
             }`}
             title="Choisir taille et couleur"
           >

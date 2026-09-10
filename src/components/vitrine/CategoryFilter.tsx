@@ -49,8 +49,8 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
               className={cn(
                 "flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2.5 rounded-2xl transition-all duration-200 shrink-0 border text-center group",
                 isSelected
-                  ? "bg-[#6B7A3D] text-white border-[#54602F] shadow-sm scale-[1.02]"
-                  : "bg-[#FBF8F2] text-[#726C5C] border-[#E4DAC4] hover:border-[#6B7A3D]/40 hover:bg-[#F6F1E7]"
+                  ? "bg-[var(--kat-accent,#6B7A3D)] text-white border-[#54602F] shadow-sm scale-[1.02]"
+                  : "bg-[#FBF8F2] text-[#726C5C] border-[#E4DAC4] hover:border-[var(--kat-accent,#6B7A3D)]/40 hover:bg-[#F6F1E7]"
               )}
             >
               <div

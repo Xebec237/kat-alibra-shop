@@ -29,7 +29,7 @@ export const CartBottomBar: React.FC<CartBottomBarProps> = ({
         >
           <div className="relative p-2.5 rounded-xl bg-[#EBF0DE] text-[#54602F]">
             <ShoppingBag className="w-5 h-5" />
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#6B7A3D] text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#FBF8F2]">
+            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--kat-accent,#6B7A3D)] text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#FBF8F2]">
               {totalCount}
             </span>
           </div>
@@ -56,7 +56,7 @@ export const CartBottomBar: React.FC<CartBottomBarProps> = ({
           <button
             type="button"
             onClick={onOpenCheckout}
-            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#6B7A3D] text-white font-bold text-sm hover:bg-[#54602F] shadow-sm transition-all duration-150 active:scale-95"
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[var(--kat-accent,#6B7A3D)] text-white font-bold text-sm hover:bg-[var(--kat-accent-fonce,#54602F)] shadow-sm transition-all duration-150 active:scale-95"
           >
             <span>Commander</span>
             <ArrowRight className="w-4 h-4" />

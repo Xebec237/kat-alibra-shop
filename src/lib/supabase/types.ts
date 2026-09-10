@@ -19,6 +19,10 @@ export interface Profile {
   adresse: string | null;
   ville: string | null;
   pays: string | null;
+  /** Identifiant d'une teinte du nuancier (voir lib/theme/palette). */
+  couleur_theme: string | null;
+  lookbook_media_url: string | null;
+  lookbook_media_type: 'image' | 'video' | null;
   created_at: string;
   updated_at: string;
 }

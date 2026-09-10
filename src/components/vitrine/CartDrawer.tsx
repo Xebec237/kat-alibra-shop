@@ -41,7 +41,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         {/* En-tête tiroir */}
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#E4DAC4]">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-[#6B7A3D]" />
+            <ShoppingBag className="w-5 h-5 text-[var(--kat-accent,#6B7A3D)]" />
             <h2 className="font-bold text-lg text-[#2E2C24] font-display">
               Mon Panier ({totalCount})
             </h2>
@@ -167,7 +167,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
               <div className="flex justify-between">
                 <span>Frais de livraison</span>
-                <span className="text-[#6B7A3D] font-medium">À convenir sur WhatsApp</span>
+                <span className="text-[var(--kat-accent,#6B7A3D)] font-medium">À convenir sur WhatsApp</span>
               </div>
             </div>
 

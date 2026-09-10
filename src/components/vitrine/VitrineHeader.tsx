@@ -107,10 +107,10 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
                 <h1 className="text-base sm:text-lg font-bold font-display text-[#2E2C24] leading-tight">
                   {profile.nom_boutique}
                 </h1>
-                <CheckCircle2 className="w-4 h-4 text-[#6B7A3D] shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--kat-accent,#6B7A3D)] shrink-0" />
               </div>
               <p className="text-[11px] text-[#726C5C] flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-[#6B7A3D]" />
+                <MapPin className="w-3 h-3 text-[var(--kat-accent,#6B7A3D)]" />
                 {profile.ville || 'Douala, Cameroun'}
               </p>
             </div>
@@ -171,13 +171,13 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
             placeholder="Rechercher parmi les articles..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-[#F6F1E7] border border-[#E4DAC4] rounded-full pl-10 pr-24 py-2.5 text-xs sm:text-sm text-[#2E2C24] placeholder-[#9B9484] focus:outline-none focus:border-[#6B7A3D] focus:bg-[#FBF8F2] transition-colors"
+            className="w-full bg-[#F6F1E7] border border-[#E4DAC4] rounded-full pl-10 pr-24 py-2.5 text-xs sm:text-sm text-[#2E2C24] placeholder-[#9B9484] focus:outline-none focus:border-[var(--kat-accent,#6B7A3D)] focus:bg-[#FBF8F2] transition-colors"
           />
           {onOpenLookbook ? (
             <button
               type="button"
               onClick={onOpenLookbook}
-              className="absolute right-1.5 px-3 py-1 rounded-full bg-[#6B7A3D] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[#54602F] transition-colors shadow-xs"
+              className="absolute right-1.5 px-3 py-1 rounded-full bg-[var(--kat-accent,#6B7A3D)] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[var(--kat-accent-fonce,#54602F)] transition-colors shadow-xs"
             >
               <Sparkles className="w-3 h-3" />
               <span>Lookbook</span>

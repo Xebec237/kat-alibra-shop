@@ -13,6 +13,7 @@ import { CheckoutModal } from '@/components/vitrine/CheckoutModal';
 import { HeroPromoBanner } from '@/components/vitrine/HeroPromoBanner';
 import { LookbookStoryModal } from '@/components/vitrine/LookbookStoryModal';
 import { ShoppingBag } from 'lucide-react';
+import { variablesTeinte } from '@/lib/theme/palette';
 
 interface VitrineClientProps {
   profile: Profile;
@@ -57,7 +58,10 @@ export const VitrineClient: React.FC<VitrineClientProps> = ({
 
   return (
     <CartProvider storeSlug={profile.slug}>
-      <div className="min-h-screen bg-[#F6F1E7] pb-28 text-[#2E2C24]">
+      <div
+        className="min-h-screen bg-[#F6F1E7] pb-28 text-[#2E2C24]"
+        style={variablesTeinte(profile.couleur_theme)}
+      >
         {/* En-tête marchand (logo, partage, WhatsApp et recherche) */}
         <VitrineHeader
           profile={profile}
@@ -72,7 +76,12 @@ export const VitrineClient: React.FC<VitrineClientProps> = ({
         {/* Bannière promo : n'a de sens que s'il y a des articles à explorer */}
         {lookbookProducts.length > 0 ? (
           <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-4">
-            <HeroPromoBanner onExplore={() => setIsLookbookOpen(true)} />
+            <HeroPromoBanner
+              onExplore={() => setIsLookbookOpen(true)}
+              mediaUrl={profile.lookbook_media_url}
+              mediaType={profile.lookbook_media_type}
+              nomBoutique={profile.nom_boutique}
+            />
           </div>
         ) : null}
 
