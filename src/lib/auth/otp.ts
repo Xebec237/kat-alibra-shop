@@ -82,8 +82,15 @@ export function isValidCode(value: string): boolean {
 export function translateAuthError(message: string): string {
   const m = message.toLowerCase();
 
-  if (m.includes('phone provider') || m.includes('phone_provider_disabled')) {
-    return "L'envoi par WhatsApp n'est pas encore activé sur ce projet. Utilisez votre adresse email en attendant.";
+  // Supabase renvoie `otp_disabled` quand le fournisseur téléphonie n'est pas
+  // configuré — le message brut ne dit pas lequel des deux canaux est en cause.
+  if (
+    m.includes('otp_disabled') ||
+    m.includes('phone provider') ||
+    m.includes('phone_provider_disabled') ||
+    m.includes('sms provider')
+  ) {
+    return "L'envoi par WhatsApp n'est pas encore activé sur ce projet. Choisissez « Email » pour recevoir votre code.";
   }
   if (m.includes('token has expired') || m.includes('expired')) {
     return 'Ce code a expiré. Demandez-en un nouveau.';
