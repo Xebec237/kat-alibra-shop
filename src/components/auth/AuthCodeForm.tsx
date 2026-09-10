@@ -285,6 +285,14 @@ export const AuthCodeForm: React.FC<AuthCodeFormProps> = ({ mode, redirectTo }) 
                 required
               />
 
+              {channel === 'email' ? (
+                <p className="text-[11px] text-[#726C5C] text-center leading-relaxed">
+                  Le modèle d&apos;email Supabase peut envoyer un lien plutôt
+                  qu&apos;un code : dans ce cas, ouvrez simplement le lien reçu,
+                  il vous connecte directement.
+                </p>
+              ) : null}
+
               <Button
                 type="submit"
                 variant="primary"
