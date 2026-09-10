@@ -25,9 +25,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "KAT — Créez votre catalogue produits & vendez sur WhatsApp",
   description: "La solution la plus simple pour les commerçants africains de créer un catalogue en ligne partageable et recevoir des commandes structurées sur WhatsApp.",
-  icons: {
-    icon: "/favicon.ico",
-  },
+  // Pas d'`icons` explicite : Next.js détecte `src/app/icon.svg` (le K de KAT).
+  // Forcer /favicon.ico afficherait le logo Next.js livré par create-next-app.
 };
 
 export default function RootLayout({
