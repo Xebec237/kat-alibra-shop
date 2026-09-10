@@ -3,212 +3,390 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MessageCircle,
-  ShoppingBag,
   Sparkles,
-  Zap,
-  ShieldCheck,
-  Smartphone,
   ArrowRight,
   CheckCircle2,
   Share2,
-  TrendingUp,
-  Layers,
+  Camera,
+  Store,
+  Star,
+  ShieldCheck,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { getShowcase } from '@/lib/queries/showcase';
+import { formatPrice } from '@/lib/utils/formatters';
+import { PhoneMockup } from '@/components/landing/PhoneMockup';
 
-export default function HomePage() {
+const CATEGORIES = [
+  { nom: 'Sacs', emoji: '👜' },
+  { nom: 'Robes', emoji: '👗' },
+  { nom: 'Chaussures', emoji: '👠' },
+  { nom: 'Montres', emoji: '⌚' },
+  { nom: 'Beauté', emoji: '💄' },
+  { nom: 'Enfants', emoji: '🎒' },
+];
+
+const ETAPES = [
+  {
+    icone: Store,
+    titre: 'Créez votre boutique',
+    texte:
+      "Votre nom, votre numéro WhatsApp, votre adresse email. Aucun mot de passe à retenir : vous vous connectez par un lien reçu par mail.",
+  },
+  {
+    icone: Camera,
+    titre: 'Photographiez vos articles',
+    texte:
+      "Une photo prise au téléphone, un prix, et l'article est en ligne. Vos clients le voient immédiatement.",
+  },
+  {
+    icone: Share2,
+    titre: 'Partagez votre lien',
+    texte:
+      "Un seul lien à envoyer dans vos statuts et vos groupes. Les commandes arrivent structurées sur votre WhatsApp.",
+  },
+];
+
+/**
+ * La page est mise en cache puis régénérée toutes les 5 minutes : sans ça, la
+ * vitrine mise en avant resterait figée au moment du déploiement et
+ * n'afficherait plus les nouveaux articles.
+ */
+export const revalidate = 300;
+
+export default async function HomePage() {
+  const showcase = await getShowcase();
+  const vedette = showcase?.produits[0];
+
   return (
     <div className="min-h-screen bg-[#F6F1E7] text-[#2E2C24]">
-      {/* Navigation */}
-      <header className="border-b border-[#E4DAC4] bg-[#FBF8F2]/90 backdrop-blur-md sticky top-0 z-50">
+      {/* ---------------------------------------------------------------- */}
+      {/* Navigation                                                        */}
+      {/* ---------------------------------------------------------------- */}
+      <header className="border-b border-[#E4DAC4] bg-[#F6F1E7]/85 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-lg shadow-xs">
               K
             </div>
-            <span className="font-bold font-display text-xl tracking-tight text-[#2E2C24]">
-              KAT
-            </span>
+            <span className="font-bold font-display text-xl tracking-tight">KAT</span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {showcase ? (
+              <Link
+                href={`/c/${showcase.slug}`}
+                className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors hidden sm:block"
+              >
+                Voir une boutique
+              </Link>
+            ) : null}
             <Link
-              href="/c/douala-chic"
-              className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] hidden sm:block"
+              href="/login"
+              className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors px-2"
             >
-              Voir la démo en direct
+              Connexion
             </Link>
-            <Link href="/dashboard">
-              <Button variant="primary" size="sm" className="rounded-xl">
-                Espace Marchand
-              </Button>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#6B7A3D] text-white px-4 py-2 text-xs sm:text-sm font-bold hover:bg-[#54602F] transition-colors shadow-xs"
+            >
+              Ouvrir ma boutique
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-12 pb-16 px-4 sm:px-6 max-w-5xl mx-auto text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF0DE] border border-[#DDE6C9] text-xs font-semibold text-[#54602F]">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Créé pour les commerçants du Cameroun & d&apos;Afrique francophone</span>
+      {/* ---------------------------------------------------------------- */}
+      {/* Hero                                                              */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pt-16 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+        <div className="space-y-6 text-center lg:text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF0DE] border border-[#DDE6C9] text-xs font-semibold text-[#54602F]">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Pensé pour les commerçants d&apos;Afrique francophone</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold font-display tracking-tight leading-[1.08]">
+            Votre boutique en ligne.
+            <br />
+            <span className="text-[#6B7A3D]">Vos commandes sur WhatsApp.</span>
+          </h1>
+
+          <p className="text-sm sm:text-base text-[#726C5C] leading-relaxed max-w-lg mx-auto lg:mx-0">
+            Créez un catalogue que vos clients parcourent comme une vraie
+            application, et recevez leurs commandes déjà rédigées — articles,
+            tailles, adresse, total. Fini les captures d&apos;écran et les
+            «&nbsp;c&apos;est combien&nbsp;?&nbsp;» à répétition.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-1">
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6B7A3D] text-white px-7 h-13 py-3.5 text-sm font-bold hover:bg-[#54602F] transition-colors shadow-sm"
+            >
+              <span>Ouvrir ma boutique gratuitement</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            {showcase ? (
+              <Link
+                href={`/c/${showcase.slug}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] px-7 py-3.5 text-sm font-bold text-[#2E2C24] hover:bg-[#EBF0DE] hover:border-[#DDE6C9] transition-colors"
+              >
+                <span>Voir un exemple réel</span>
+              </Link>
+            ) : null}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-2 text-xs text-[#726C5C]">
+            {['Sans commission', 'Sans mot de passe', 'Prêt en 5 minutes'].map((t) => (
+              <span key={t} className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#6B7A3D]" />
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-display tracking-tight text-[#2E2C24] leading-[1.15] max-w-4xl mx-auto">
-          Votre catalogue produits en ligne.{' '}
-          <span className="text-[#6B7A3D] underline decoration-[#6B7A3D]/30">Prise de commande sur WhatsApp.</span>
-        </h1>
+        {/* Aperçu de vitrine — alimenté par une vraie boutique */}
+        {showcase ? (
+          <div className="relative">
+            <PhoneMockup
+              nomBoutique={showcase.nomBoutique}
+              ville={showcase.ville}
+              produits={showcase.produits}
+            />
+            <p className="text-center text-[11px] text-[#9B9484] mt-6">
+              Boutique réelle sur KAT —{' '}
+              <Link
+                href={`/c/${showcase.slug}`}
+                className="font-semibold text-[#6B7A3D] hover:underline"
+              >
+                {showcase.nomBoutique}
+              </Link>
+            </p>
+          </div>
+        ) : null}
+      </section>
 
-        <p className="text-sm sm:text-lg text-[#726C5C] max-w-2xl mx-auto leading-relaxed">
-          Fini d&apos;envoyer 50 photos en vrac dans vos statuts ou groupes. Créez votre vitrine en 5 minutes, partagez un lien unique et recevez des commandes structurées prêtes à livrer.
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Link href="/dashboard" className="w-full sm:w-auto">
-            <Button variant="primary" size="lg" className="w-full sm:w-auto h-12 text-sm font-bold shadow-md">
-              <Zap className="w-4 h-4 mr-2" />
-              Créer ma boutique en 5 min
-            </Button>
-          </Link>
-
-          <Link href="/c/douala-chic" className="w-full sm:w-auto">
-            <Button variant="outline" size="lg" className="w-full sm:w-auto h-12 text-sm font-bold bg-[#FBF8F2]">
-              <Smartphone className="w-4 h-4 mr-2 text-[#6B7A3D]" />
-              Tester la vitrine client
-            </Button>
-          </Link>
-        </div>
-
-        {/* Garanties */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4 text-xs font-medium text-[#726C5C]">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-[#3F7D4F]" /> Gratuit pour démarrer
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-[#3F7D4F]" /> Mobile-first ultra-rapide (3G)
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-[#3F7D4F]" /> Zéro création de compte client
-          </span>
+      {/* ---------------------------------------------------------------- */}
+      {/* Catégories                                                        */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="border-y border-[#E4DAC4] bg-[#FBF8F2]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-[#9B9484] mb-6">
+            Quoi que vous vendiez
+          </p>
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
+            {CATEGORIES.map((c) => (
+              <div key={c.nom} className="flex flex-col items-center gap-2 flex-1">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-xl sm:text-2xl">
+                  {c.emoji}
+                </div>
+                <span className="text-[10px] sm:text-xs font-medium text-[#726C5C] text-center">
+                  {c.nom}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Aperçu interactif du flux */}
-      <section className="py-12 bg-[#FBF8F2] border-y border-[#E4DAC4] px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto space-y-10">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-[#2E2C24]">
-              Comment fonctionne KAT ?
+      {/* ---------------------------------------------------------------- */}
+      {/* Ce que voit le client                                             */}
+      {/* ---------------------------------------------------------------- */}
+      {vedette ? (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <div className="text-center space-y-3 mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
+              Ce que votre client voit
             </h2>
-            <p className="text-xs sm:text-sm text-[#726C5C]">
-              Un tunnel fluide en 3 étapes simples pour vous et vos clients.
+            <p className="text-sm text-[#726C5C] max-w-xl mx-auto">
+              Une fiche article soignée, qui donne envie d&apos;acheter et répond
+              aux questions avant qu&apos;elles ne soient posées.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Étape 1 */}
-            <Card className="p-6 space-y-3 relative">
-              <div className="w-10 h-10 rounded-xl bg-[#EBF0DE] text-[#54602F] flex items-center justify-center font-bold font-display text-base">
-                1
-              </div>
-              <h3 className="font-bold text-base text-[#2E2C24] font-display">
-                Ajoutez vos produits
-              </h3>
-              <p className="text-xs text-[#726C5C] leading-relaxed">
-                Renseignez le nom, vos prix en FCFA, vos stocks et vos photos depuis votre smartphone.
-              </p>
-            </Card>
+          <div className="grid md:grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
+            <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FBF8F2] border border-[#E4DAC4] shadow-sm">
+              <Image
+                src={vedette.images[0]}
+                alt={vedette.nom}
+                fill
+                sizes="(max-width: 768px) 100vw, 400px"
+                className="object-cover"
+              />
+            </div>
 
-            {/* Étape 2 */}
-            <Card className="p-6 space-y-3 relative">
-              <div className="w-10 h-10 rounded-xl bg-[#EBF0DE] text-[#54602F] flex items-center justify-center font-bold font-display text-base">
-                2
-              </div>
-              <h3 className="font-bold text-base text-[#2E2C24] font-display">
-                Partagez votre lien
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold font-display leading-tight">
+                {vedette.nom}
               </h3>
-              <p className="text-xs text-[#726C5C] leading-relaxed">
-                Postez votre lien unique dans votre statut WhatsApp, bio Instagram ou groupes Facebook.
-              </p>
-            </Card>
 
-            {/* Étape 3 */}
-            <Card className="p-6 space-y-3 relative">
-              <div className="w-10 h-10 rounded-xl bg-[#E8F8EE] text-[#1E7E34] border border-[#BDEBD0] flex items-center justify-center font-bold font-display text-base">
-                3
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-[#B98A2E] text-[#B98A2E]" />
+                  ))}
+                </div>
+                <span className="text-xs text-[#726C5C]">Avis clients</span>
               </div>
-              <h3 className="font-bold text-base text-[#2E2C24] font-display">
-                Recevez des commandes nettes
-              </h3>
-              <p className="text-xs text-[#726C5C] leading-relaxed">
-                Le client remplit son panier et vous envoie la commande formatée (avec référence courte et total) sur WhatsApp.
+
+              <p className="text-2xl font-extrabold font-display text-[#6B7A3D]">
+                {formatPrice(vedette.prix_promo ?? vedette.prix, 'FCFA')}
               </p>
-            </Card>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
+                  Tailles
+                </p>
+                <div className="flex gap-2">
+                  {['S', 'M', 'L', 'XL'].map((t, i) => (
+                    <span
+                      key={t}
+                      className={`w-9 h-9 rounded-xl border text-xs font-bold flex items-center justify-center ${
+                        i === 1
+                          ? 'bg-[#6B7A3D] text-white border-[#6B7A3D]'
+                          : 'bg-[#FBF8F2] text-[#2E2C24] border-[#E4DAC4]'
+                      }`}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
+                  Couleurs
+                </p>
+                <div className="flex gap-2">
+                  {['#6B7A3D', '#B4553C', '#2E2C24', '#E4DAC4'].map((c, i) => (
+                    <span
+                      key={c}
+                      style={{ backgroundColor: c }}
+                      className={`w-7 h-7 rounded-full border-2 ${
+                        i === 0 ? 'border-[#2E2C24]' : 'border-[#E4DAC4]'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <span className="flex-1 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] py-3 text-xs font-bold text-center text-[#2E2C24]">
+                  Ajouter au panier
+                </span>
+                <span className="flex-1 rounded-full bg-[#25D366] py-3 text-xs font-bold text-center text-white inline-flex items-center justify-center gap-1.5">
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  Commander
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Comment ça marche                                                 */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="border-t border-[#E4DAC4] bg-[#FBF8F2]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+          <div className="text-center space-y-3 mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
+              Trois étapes, et vous vendez
+            </h2>
+            <p className="text-sm text-[#726C5C]">
+              Pas de site à construire, pas de technicien à payer.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-5">
+            {ETAPES.map((e, i) => {
+              const Icone = e.icone;
+              return (
+                <div
+                  key={e.titre}
+                  className="relative rounded-3xl bg-[#F6F1E7] border border-[#E4DAC4] p-6 space-y-3"
+                >
+                  <span className="absolute top-5 right-5 text-3xl font-extrabold font-display text-[#E4DAC4]">
+                    {i + 1}
+                  </span>
+                  <div className="w-11 h-11 rounded-2xl bg-[#EBF0DE] text-[#54602F] flex items-center justify-center">
+                    <Icone className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold font-display text-base">{e.titre}</h3>
+                  <p className="text-xs text-[#726C5C] leading-relaxed">{e.texte}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Différenciation vs WhatsApp Business natif */}
-      <section className="py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold font-display text-[#2E2C24]">
-            Pourquoi KAT fait la différence ?
-          </h2>
-          <p className="text-xs sm:text-sm text-[#726C5C]">
-            Ce que WhatsApp Business fait mal, et que KAT perfectionne pour vous.
-          </p>
-        </div>
+      {/* ---------------------------------------------------------------- */}
+      {/* Appel à l'action final                                            */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="relative rounded-[2rem] bg-gradient-to-br from-[#2E2C24] via-[#3D3A30] to-[#54602F] px-6 sm:px-12 py-12 sm:py-16 text-center overflow-hidden">
+          <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/5" />
+          <div className="absolute -left-12 -bottom-12 w-40 h-40 rounded-full bg-white/5" />
 
-        <div className="bg-[#FBF8F2] border border-[#E4DAC4] rounded-2xl overflow-hidden divide-y divide-[#E4DAC4]">
-          <div className="grid grid-cols-2 p-4 bg-[#EBF0DE]/60 text-xs font-bold font-display text-[#2E2C24]">
-            <span>WhatsApp Business classique</span>
-            <span className="text-[#54602F]">Avec votre boutique KAT</span>
-          </div>
+          <div className="relative z-10 space-y-5">
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-white leading-tight">
+              Votre première vente vous attend
+            </h2>
+            <p className="text-sm text-[#EBF0DE] max-w-md mx-auto leading-relaxed">
+              Ouvrez votre boutique en cinq minutes et partagez votre lien dès
+              aujourd&apos;hui. C&apos;est gratuit, et vous gardez cent pour cent
+              de vos ventes.
+            </p>
 
-          <div className="grid grid-cols-2 p-4 text-xs">
-            <span className="text-[#726C5C]">Un seul catalogue plat et figé</span>
-            <span className="font-semibold text-[#2E2C24]">Plusieurs catalogues thématiques (saisons, promos, arrivages)</span>
-          </div>
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-[#2E2C24] px-8 py-3.5 text-sm font-bold hover:bg-[#EBF0DE] transition-colors shadow-sm"
+            >
+              <span>Ouvrir ma boutique</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
 
-          <div className="grid grid-cols-2 p-4 text-xs">
-            <span className="text-[#726C5C]">Pas de gestion des ruptures de stock</span>
-            <span className="font-semibold text-[#2E2C24]">Stock en temps réel avec badge rupture & alertes</span>
-          </div>
-
-          <div className="grid grid-cols-2 p-4 text-xs">
-            <span className="text-[#726C5C]">Messages désordonnés et perte de commandes</span>
-            <span className="font-semibold text-[#2E2C24]">Numéro de référence unique (ex: KAT-01042) et suivi complet</span>
-          </div>
-
-          <div className="grid grid-cols-2 p-4 text-xs">
-            <span className="text-[#726C5C]">Aucune visibilité sur les statistiques</span>
-            <span className="font-semibold text-[#2E2C24]">Compteur de vues, articles les plus consultés & chiffre d&apos;affaires</span>
-          </div>
-
-          <div className="grid grid-cols-2 p-4 text-xs">
-            <span className="text-[#726C5C]">Pas de Mobile Money intégré</span>
-            <span className="font-semibold text-[#2E2C24]">Préparé pour MTN MoMo & Orange Money</span>
+            <p className="text-[11px] text-[#EBF0DE]/70 inline-flex items-center gap-1.5 justify-center">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Sans carte bancaire, sans engagement
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-[#E4DAC4] bg-[#FBF8F2] py-8 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#6B7A3D] text-white flex items-center justify-center font-bold text-xs">
+      {/* ---------------------------------------------------------------- */}
+      {/* Pied de page                                                      */}
+      {/* ---------------------------------------------------------------- */}
+      <footer className="border-t border-[#E4DAC4] bg-[#FBF8F2]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-sm">
               K
             </div>
-            <span className="font-bold text-sm text-[#2E2C24]">KAT</span>
-            <span className="text-xs text-[#726C5C]">© 2026 — Tous droits réservés</span>
+            <span className="text-xs text-[#726C5C]">
+              KAT — Vendez proprement sur WhatsApp
+            </span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-[#726C5C]">
-            <Link href="/dashboard" className="hover:text-[#2E2C24]">Dashboard</Link>
-            <Link href="/c/douala-chic" className="hover:text-[#2E2C24]">Catalogue Démo</Link>
-            <Link href="/parametres/boutique" className="hover:text-[#2E2C24]">Paramètres</Link>
+          <div className="flex items-center gap-5 text-xs text-[#726C5C]">
+            <Link href="/register" className="hover:text-[#2E2C24] transition-colors">
+              Créer une boutique
+            </Link>
+            <Link href="/login" className="hover:text-[#2E2C24] transition-colors">
+              Connexion
+            </Link>
+            {showcase ? (
+              <Link
+                href={`/c/${showcase.slug}`}
+                className="hover:text-[#2E2C24] transition-colors"
+              >
+                Exemple
+              </Link>
+            ) : null}
           </div>
         </div>
       </footer>

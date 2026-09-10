@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
+  ArrowLeft,
   Search,
   MessageCircle,
   Share2,
@@ -30,6 +31,14 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
   onOpenLookbook,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [peutRevenir, setPeutRevenir] = useState(false);
+
+  // Le bouton retour n'a de sens que s'il y a une page où revenir. La vitrine
+  // s'ouvre souvent depuis un lien WhatsApp, en premier onglet : proposer un
+  // retour qui ne mène nulle part serait pire que ne rien afficher.
+  useEffect(() => {
+    setPeutRevenir(window.history.length > 1);
+  }, []);
 
   const handleShare = () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
@@ -62,6 +71,18 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
         {/* Top App Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {peutRevenir ? (
+              <button
+                type="button"
+                onClick={() => window.history.back()}
+                className="w-9 h-9 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/40 transition-colors shrink-0"
+                title="Revenir à la page précédente"
+                aria-label="Retour"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+            ) : null}
+
             <div className="relative w-11 h-11 rounded-2xl overflow-hidden border border-[#E4DAC4] bg-[#F6F1E7] shrink-0 shadow-xs">
               {profile.logo_url ? (
                 <Image
