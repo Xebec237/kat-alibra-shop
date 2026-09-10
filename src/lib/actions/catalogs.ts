@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createPublicServerClient } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { getCurrentProfile } from '@/lib/queries/merchant';
 
@@ -47,21 +47,12 @@ export async function incrementCatalogViews(catalogId: string): Promise<void> {
   if (!isSupabaseConfigured) return;
 
   try {
-    const supabase = createAdminClient();
+    const supabase = createPublicServerClient();
     if (!supabase) return;
 
-    const { data } = await supabase
-      .from('catalogs')
-      .select('vues')
-      .eq('id', catalogId)
-      .maybeSingle();
-
-    if (!data) return;
-
-    await supabase
-      .from('catalogs')
-      .update({ vues: (data.vues ?? 0) + 1 })
-      .eq('id', catalogId);
+    // Fonction SECURITY DEFINER : le visiteur n'a aucun droit d'écriture sur
+    // `catalogs`, seul le marchand propriétaire en a.
+    await supabase.rpc('increment_catalog_views', { p_catalog_id: catalogId });
   } catch {
     // Un compteur de vues ne doit jamais faire échouer l'affichage de la vitrine.
   }

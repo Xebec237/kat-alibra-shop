@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { createAdminClient, createPublicServerClient } from '@/lib/supabase/admin';
+import { createPublicServerClient } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -33,10 +33,11 @@ export async function POST(request: Request) {
       });
     }
 
-    // Client privilégié si une clé secrète est configurée, sinon client public :
-    // RLS autorise l'insertion d'une commande par un visiteur non authentifié.
-    const admin = createAdminClient();
-    const supabase = admin ?? createPublicServerClient();
+    // Client public : toutes les écritures nécessaires à une commande sont
+    // autorisées par RLS ou passent par une fonction SECURITY DEFINER. Aucune
+    // clé secrète n'entre en jeu, donc aucun risque d'en utiliser une qui
+    // appartienne à un autre projet — la panne la plus sournoise rencontrée ici.
+    const supabase = createPublicServerClient();
 
     if (!supabase) {
       return NextResponse.json({
@@ -47,49 +48,29 @@ export async function POST(request: Request) {
       });
     }
 
-    // 1. Fiche client : un même numéro qui recommande met à jour son historique
-    // plutôt que de créer un doublon (contrainte UNIQUE(store_id, telephone)).
-    // Réservé au client privilégié : `customers` n'est lisible que par le
-    // marchand propriétaire.
+    // 1. Fiche client, via une fonction SECURITY DEFINER : le visiteur n'a pas
+    // le droit de lire `customers` (ce serait le fichier client de toutes les
+    // boutiques), mais il peut appeler cette fonction au périmètre étroit.
     let customerId: string | null = null;
 
-    if (admin && store_id && telephone_client) {
-      const { data: existing } = await supabase
-        .from('customers')
-        .select('id, commandes_count, total_depense')
-        .eq('store_id', store_id)
-        .eq('telephone', telephone_client)
-        .maybeSingle();
+    if (store_id && telephone_client) {
+      const { data: rpcId, error: rpcError } = await supabase.rpc(
+        'record_order_customer',
+        {
+          p_store_id: store_id,
+          p_nom: nom_client,
+          p_telephone: telephone_client,
+          p_adresse: adresse_livraison ?? null,
+          p_total: total ?? 0,
+        }
+      );
 
-      if (existing) {
-        const { data: updated } = await supabase
-          .from('customers')
-          .update({
-            nom: nom_client,
-            adresse: adresse_livraison ?? undefined,
-            commandes_count: (existing.commandes_count ?? 0) + 1,
-            total_depense: Number(existing.total_depense ?? 0) + Number(total ?? 0),
-          })
-          .eq('id', existing.id)
-          .select('id')
-          .single();
-
-        customerId = updated?.id ?? existing.id;
+      if (rpcError) {
+        // Migration 002 pas encore appliquée : la commande reste enregistrée,
+        // seul l'historique client est différé.
+        console.warn('record_order_customer indisponible:', rpcError.message);
       } else {
-        const { data: created } = await supabase
-          .from('customers')
-          .insert({
-            store_id,
-            nom: nom_client,
-            telephone: telephone_client,
-            adresse: adresse_livraison || null,
-            commandes_count: 1,
-            total_depense: total ?? 0,
-          })
-          .select('id')
-          .single();
-
-        customerId = created?.id ?? null;
+        customerId = (rpcId as string | null) ?? null;
       }
     }
 
