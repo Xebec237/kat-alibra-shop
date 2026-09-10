@@ -85,6 +85,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     // Tout sauf les assets statiques, les images et la vitrine publique.
-    '/((?!_next/static|_next/image|favicon.ico|c/|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|c/|recherche|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MessageCircle,
+  Search,
   Sparkles,
   ArrowRight,
   CheckCircle2,
@@ -81,6 +82,13 @@ export default async function HomePage() {
               </Link>
             ) : null}
             <Link
+              href="/recherche"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors px-2"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Rechercher</span>
+            </Link>
+            <Link
               href="/login"
               className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors px-2"
             >
@@ -145,6 +153,34 @@ export default async function HomePage() {
                 {t}
               </span>
             ))}
+          </div>
+
+          {/* Entrée acheteur : tout le monde n'arrive pas ici pour ouvrir une
+              boutique, beaucoup viennent chercher un article. */}
+          <div className="pt-4 border-t border-[#E4DAC4] space-y-2">
+            <p className="text-xs font-semibold text-[#726C5C]">
+              Vous cherchez plutôt à acheter ?
+            </p>
+            <form
+              action="/recherche"
+              method="get"
+              className="relative flex items-center max-w-md mx-auto lg:mx-0"
+            >
+              <Search className="absolute left-3.5 w-4 h-4 text-[#726C5C] pointer-events-none" />
+              <input
+                type="search"
+                name="q"
+                placeholder="Un article, une boutique…"
+                aria-label="Rechercher un article ou une boutique"
+                className="w-full bg-[#FBF8F2] border border-[#E4DAC4] rounded-full pl-10 pr-24 py-2.5 text-sm placeholder-[#9B9484] focus:outline-none focus:border-[#6B7A3D] focus:bg-white transition-colors"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 px-4 py-1.5 rounded-full bg-[#2E2C24] text-white text-xs font-bold hover:bg-[#3D3A30] transition-colors"
+              >
+                Chercher
+              </button>
+            </form>
           </div>
         </div>
 

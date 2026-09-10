@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   ArrowLeft,
   Search,
@@ -10,6 +11,7 @@ import {
   Check,
   Sparkles,
   MapPin,
+  PackageSearch,
   CheckCircle2,
 } from 'lucide-react';
 import { Profile, Catalog } from '@/lib/supabase/types';
@@ -125,6 +127,15 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
                 <span>Mode Lookbook</span>
               </button>
             ) : null}
+
+            <Link
+              href="/recherche"
+              className="p-2.5 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:bg-[#E4DAC4]/30 transition-colors shadow-xs"
+              title="Chercher un article dans toutes les boutiques"
+              aria-label="Rechercher dans toutes les boutiques"
+            >
+              <PackageSearch className="w-4 h-4 text-[#726C5C]" />
+            </Link>
 
             <button
               onClick={handleShare}
