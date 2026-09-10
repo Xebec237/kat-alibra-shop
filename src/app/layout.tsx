@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import { HashSessionCatcher } from "@/components/auth/HashSessionCatcher";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${inter.variable} ${manrope.variable}`}>
       <body className="antialiased bg-[#F6F1E7] text-[#2E2C24] min-h-screen selection:bg-[#EBF0DE] selection:text-[#54602F]">
+        <HashSessionCatcher />
         {children}
       </body>
     </html>
