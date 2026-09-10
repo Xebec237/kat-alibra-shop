@@ -9,7 +9,10 @@ interface LoginPageProps {
 function messageErreur(code?: string): string | null {
   if (!code) return null;
   if (code === 'lien_expire') {
-    return "Ce lien a expiré ou a déjà servi. Les liens de connexion sont à usage unique : demandez-en un nouveau.";
+    // Trois causes possibles, indiscernables côté serveur : expiration, lien
+    // déjà consommé, ou ouverture dans un autre navigateur que celui de la
+    // demande — la preuve de possession reste attachée au navigateur d'origine.
+    return "Ce lien n'a pas pu vous connecter. Il a peut-être expiré, déjà servi, ou été ouvert dans un autre navigateur que celui où vous l'avez demandé. Demandez-en un nouveau et ouvrez-le sur le même appareil.";
   }
   if (code === 'lien_invalide') {
     return "Ce lien n'est pas valide. Redemandez-en un ci-dessous.";

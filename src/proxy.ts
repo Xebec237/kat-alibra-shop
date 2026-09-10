@@ -21,6 +21,25 @@ export async function proxy(request: NextRequest) {
   // le dashboard de démonstration deviendrait inaccessible.
   if (!isSupabaseConfigured) return NextResponse.next();
 
+  // Rattrapage du lien de connexion.
+  //
+  // Supabase ne redirige que vers les adresses inscrites dans « Redirect URLs ».
+  // Quand le chemin exact n'y figure pas, il retombe sur le « Site URL », donc
+  // sur la racine — et le code de connexion arrive là au lieu de /auth/callback.
+  // On le réachemine plutôt que d'exiger une liste blanche parfaite, sans quoi
+  // le marchand verrait la page d'accueil sans comprendre qu'il n'est pas
+  // connecté.
+  const code = request.nextUrl.searchParams.get('code');
+  if (code && !request.nextUrl.pathname.startsWith('/auth/callback')) {
+    const callback = new URL('/auth/callback', request.url);
+    callback.searchParams.set('code', code);
+    callback.searchParams.set(
+      'next',
+      request.nextUrl.searchParams.get('next') || '/bienvenue'
+    );
+    return NextResponse.redirect(callback);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
