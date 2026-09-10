@@ -48,6 +48,7 @@ export async function incrementCatalogViews(catalogId: string): Promise<void> {
 
   try {
     const supabase = createAdminClient();
+    if (!supabase) return;
 
     const { data } = await supabase
       .from('catalogs')

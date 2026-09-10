@@ -1,5 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, createPublicServerClient } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -32,13 +33,27 @@ export async function POST(request: Request) {
       });
     }
 
-    const supabase = createAdminClient();
+    // Client privilégié si une clé secrète est configurée, sinon client public :
+    // RLS autorise l'insertion d'une commande par un visiteur non authentifié.
+    const admin = createAdminClient();
+    const supabase = admin ?? createPublicServerClient();
+
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        mock: true,
+        reference,
+        message: 'Commande enregistrée localement (Supabase indisponible)',
+      });
+    }
 
     // 1. Fiche client : un même numéro qui recommande met à jour son historique
     // plutôt que de créer un doublon (contrainte UNIQUE(store_id, telephone)).
+    // Réservé au client privilégié : `customers` n'est lisible que par le
+    // marchand propriétaire.
     let customerId: string | null = null;
 
-    if (store_id && telephone_client) {
+    if (admin && store_id && telephone_client) {
       const { data: existing } = await supabase
         .from('customers')
         .select('id, commandes_count, total_depense')
@@ -78,28 +93,34 @@ export async function POST(request: Request) {
       }
     }
 
-    // 2. Insertion de la commande dans Supabase
-    const { data: order, error: orderError } = await supabase
+    // 2. Insertion de la commande
+    const orderPayload = {
+      store_id,
+      customer_id: customerId,
+      catalog_id,
+      reference,
+      nom_client,
+      telephone_client,
+      adresse_livraison,
+      notes,
+      total,
+      mode_paiement: mode_paiement || 'a_la_livraison',
+      statut: statut || 'envoyee_whatsapp',
+    };
+
+    // On fixe l'identifiant nous-mêmes plutôt que de le relire après coup :
+    // `.select()` exigerait un droit de LECTURE sur `orders`, qu'aucun visiteur
+    // ne possède — sans quoi n'importe qui lirait les coordonnées de tous les
+    // clients. Les lignes de commande peuvent ainsi être rattachées sans
+    // dépendre d'une clé privilégiée.
+    const orderId = randomUUID();
+
+    const { error: orderError } = await supabase
       .from('orders')
-      .insert({
-        store_id,
-        customer_id: customerId,
-        catalog_id,
-        reference,
-        nom_client,
-        telephone_client,
-        adresse_livraison,
-        notes,
-        total,
-        mode_paiement: mode_paiement || 'a_la_livraison',
-        statut: statut || 'envoyee_whatsapp',
-      })
-      .select()
-      .single();
+      .insert({ id: orderId, ...orderPayload });
 
     if (orderError) {
-      console.warn('Supabase non connecté ou erreur insertion:', orderError.message);
-      // Retourner succès en mode démo / mock local
+      console.warn('Échec insertion commande:', orderError.message);
       return NextResponse.json({
         success: true,
         mock: true,
@@ -108,8 +129,8 @@ export async function POST(request: Request) {
       });
     }
 
-    // 2. Insertion des lignes de commande (Order Items)
-    if (items && items.length > 0 && order) {
+    // 3. Lignes de commande, rattachées à l identifiant fixé plus haut.
+    if (items && items.length > 0) {
       const orderItems = items.map((item: {
         product_id: string | null;
         nom_produit: string;
@@ -119,7 +140,7 @@ export async function POST(request: Request) {
         prix_unitaire: number;
         total_ligne: number;
       }) => ({
-        order_id: order.id,
+        order_id: orderId,
         // Le panier fabrique des clés composites (`<uuid>_<taille>_<couleur>`) :
         // on ne garde que ce qui est un vrai UUID de produit.
         product_id: UUID_RE.test(item.product_id ?? '') ? item.product_id : null,
@@ -136,7 +157,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      order,
+      order: { id: orderId, ...orderPayload },
     });
   } catch (error) {
     console.error('Erreur API commandes:', error);
