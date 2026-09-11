@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -64,8 +65,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile }) => {
           <div className="w-8 h-8 rounded-xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-sm">
             K
           </div>
+          {/* L'application s'appelle KAT ; le nom de la boutique a sa place en
+              bas de la barre, à côté de son logo, pas dans l'identité du produit. */}
           <span className="font-bold font-display text-base text-[#2E2C24]">
-            {profile?.nom_boutique || 'KAT'}
+            KAT
           </span>
         </div>
         <button
@@ -159,17 +162,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile }) => {
         {/* Profil & Déconnexion en bas */}
         <div className="p-4 border-t border-[#E4DAC4] bg-[#FBF8F2] flex items-center justify-between">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 rounded-full bg-[#E4DAC4] flex items-center justify-center font-bold text-xs text-[#2E2C24] shrink-0">
-              {profile?.nom_boutique ? profile.nom_boutique.substring(0, 2).toUpperCase() : 'DC'}
+            {/* Le logo tel qu'il apparaît sur la vitrine, avec repli sur les
+                initiales — le marchand reconnaît sa boutique d'un coup d'œil. */}
+            <div className="relative w-9 h-9 rounded-full overflow-hidden bg-[#EBF0DE] border border-[#E4DAC4] shrink-0">
+              {profile?.logo_url ? (
+                <Image
+                  src={profile.logo_url}
+                  alt=""
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center font-bold text-xs text-[#54602F] font-display">
+                  {profile?.nom_boutique
+                    ? profile.nom_boutique.substring(0, 2).toUpperCase()
+                    : 'KA'}
+                </div>
+              )}
             </div>
-            <div className="truncate text-left">
-              <p className="text-xs font-bold text-[#2E2C24] truncate">
-                {profile?.nom_boutique || 'Douala Chic'}
-              </p>
-              <p className="text-[10px] text-[#726C5C] capitalize">
-                Plan {profile?.plan || 'Gratuit'}
-              </p>
-            </div>
+
+            <p className="text-xs font-bold text-[#2E2C24] truncate">
+              {profile?.nom_boutique || 'Ma boutique'}
+            </p>
           </div>
 
           <button
