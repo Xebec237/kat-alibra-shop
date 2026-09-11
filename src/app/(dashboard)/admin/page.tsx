@@ -14,6 +14,7 @@ import {
 import { getBoutiquesAdmin } from '@/lib/queries/admin';
 import { getCurrentProfile } from '@/lib/queries/merchant';
 import { formatPrice, formatDisplayPhone, cleanWhatsAppNumber } from '@/lib/utils/formatters';
+import { BoutonRoleAdmin } from '@/components/dashboard/BoutonRoleAdmin';
 
 /** Les données changent à chaque inscription : aucune mise en cache. */
 export const dynamic = 'force-dynamic';
@@ -188,7 +189,8 @@ export default async function AdminPage() {
             </div>
 
             {/* Activité */}
-            <div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-[#726C5C] pt-1 border-t border-[#E4DAC4]/60">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-[#E4DAC4]/60">
+              <div className="flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-[#726C5C]">
               <span>
                 <strong className="text-[#2E2C24]">{b.nb_articles}</strong>{' '}
                 {Number(b.nb_articles) > 1 ? 'articles' : 'article'}
@@ -197,12 +199,20 @@ export default async function AdminPage() {
                 <strong className="text-[#2E2C24]">{b.nb_commandes}</strong>{' '}
                 {Number(b.nb_commandes) > 1 ? 'commandes' : 'commande'}
               </span>
-              <span>
-                <strong className="text-[#6B7A3D]">
-                  {formatPrice(Number(b.total_ventes), 'FCFA')}
-                </strong>{' '}
-                de ventes
-              </span>
+                <span>
+                  <strong className="text-[#6B7A3D]">
+                    {formatPrice(Number(b.total_ventes), 'FCFA')}
+                  </strong>{' '}
+                  de ventes
+                </span>
+              </div>
+
+              <BoutonRoleAdmin
+                profileId={b.id}
+                nomBoutique={b.nom_boutique}
+                estAdmin={b.est_admin}
+                estMoi={b.id === profile.id}
+              />
             </div>
           </div>
         ))}
