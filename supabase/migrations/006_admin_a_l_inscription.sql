@@ -6,6 +6,9 @@
 -- créent une boutique ordinaire. Les administrateurs supplémentaires se nomment
 -- ensuite depuis le tableau, un par un.
 --
+-- Le corps est délimité par $fn$ et non $ : un délimiteur anonyme peut être
+-- mal découpé par certains éditeurs, qui signalent alors une erreur sur DECLARE.
+--
 -- La liste vit dans une table plutôt qu'en dur dans la fonction : ajouter une
 -- adresse devient une ligne à insérer, pas une migration à écrire.
 -- ==============================================================================
@@ -28,7 +31,7 @@ ON CONFLICT (email) DO NOTHING;
 -- Reprend la fonction d'origine en y ajoutant la seule nouveauté : le marqueur
 -- est_admin, posé quand l'adresse figure dans la liste.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $fn$
 DECLARE
     store_name TEXT;
     store_slug TEXT;
@@ -52,7 +55,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$fn$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 3. RATTRAPAGE
 -- Si le compte existe déjà, il reçoit le rôle sans avoir à se réinscrire.
