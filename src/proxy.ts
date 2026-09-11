@@ -14,6 +14,7 @@ const PROTECTED_PREFIXES = [
   '/catalogues',
   '/parametres',
   '/bienvenue',
+  '/admin',
 ];
 
 export async function proxy(request: NextRequest) {

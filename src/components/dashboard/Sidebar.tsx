@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   Users,
   Settings,
+  ShieldCheck,
   ExternalLink,
   Store,
   Menu,
@@ -25,9 +26,11 @@ import { isSupabaseConfigured } from '@/lib/supabase/config';
 
 interface SidebarProps {
   profile?: Profile;
+  /** Affiche l’entrée Administration. */
+  estAdmin?: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ profile }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ profile, estAdmin = false }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,6 +56,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile }) => {
     { name: 'Commandes', href: '/commandes', icon: ShoppingBag },
     { name: 'Clients', href: '/clients', icon: Users },
     { name: 'Paramètres boutique', href: '/parametres/boutique', icon: Settings },
+    // Réservée au super administrateur : masquée pour tous les autres.
+    ...(estAdmin
+      ? [{ name: 'Administration', href: '/admin', icon: ShieldCheck }]
+      : []),
   ];
 
   const storeSlug = profile?.slug || 'douala-chic';
