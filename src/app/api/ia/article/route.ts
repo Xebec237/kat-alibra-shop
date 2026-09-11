@@ -15,6 +15,22 @@ import { getCurrentProfile } from '@/lib/queries/merchant';
 
 export const maxDuration = 60;
 
+/**
+ * Modèle utilisé, surchargeable sans toucher au code.
+ *
+ * Haiku 4.5 par défaut : c'est le moins cher du catalogue (1 $ / 5 $ le million
+ * de jetons contre 5 $ / 25 $ pour Opus 5) et la tâche — retrouver un nom de
+ * produit et rédiger trois phrases — ne demande pas davantage.
+ */
+const MODELE = process.env.KAT_IA_MODEL || 'claude-haiku-4-5';
+
+/**
+ * Deux recherches suffisent pour un article courant, et c'est le poste le plus
+ * lourd de la facture : les pages rapportées sont réinjectées dans le modèle,
+ * et chaque recherche est facturée 0,01 $.
+ */
+const RECHERCHES_MAX = 2;
+
 interface Suggestion {
   nom: string;
   description: string;
@@ -81,16 +97,22 @@ export async function POST(request: Request) {
 
   try {
     const response = await client.messages.create({
-      model: 'claude-opus-5',
-      max_tokens: 4000,
+      model: MODELE,
+      // La réponse tient en un objet JSON de trois lignes : plafonner bas évite
+      // de payer une sortie bavarde, facturée cinq fois le prix de l'entrée.
+      max_tokens: 1500,
       system: SYSTEM,
       // Recherche web côté Anthropic : sans elle le modèle ne pourrait que
       // paraphraser l'indice, alors que le but est de retrouver le vrai produit.
+      //
+      // Variante de base `_20250305` et non `_20260209` : le filtrage dynamique
+      // de la seconde n'existe que sur les modèles Opus et Sonnet récents, pas
+      // sur Haiku.
       tools: [
         {
-          type: 'web_search_20260209',
+          type: 'web_search_20250305',
           name: 'web_search',
-          max_uses: 4,
+          max_uses: RECHERCHES_MAX,
         },
       ],
       messages: [
