@@ -48,8 +48,7 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
    * confirmation, une faute de frappe enfermerait le marchand dehors — il ne
    * pourrait plus se connecter à une adresse qui n'existe pas.
    */
-  const handleChangerEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleChangerEmail = async () => {
     setEmailErreur(null);
     setEmailEnvoye(null);
 
@@ -267,7 +266,7 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
         {/* Intégration WhatsApp (Clé du produit) */}
         <Card className="space-y-4">
           <h2 className="font-bold text-sm text-[#2E2C24] font-display border-b border-[#E4DAC4]/60 pb-2 flex items-center gap-2">
-            <span>2. Numéro WhatsApp pour recevoir les commandes</span>
+            <span>2. Vos coordonnées</span>
             <span className="text-[11px] bg-[#E8F8EE] text-[#1E7E34] px-2 py-0.5 rounded-full border border-[#BDEBD0]">
               Indispensable
             </span>
@@ -287,6 +286,75 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
             <p>
               Chaque fois qu&apos;un client clique sur « Commander » sur votre catalogue, un message pré-rempli contenant la référence, ses articles et son adresse est envoyé directement sur ce numéro WhatsApp.
             </p>
+          </div>
+
+          {/* Adresse de connexion.
+              Pas de <form> ici : le HTML interdit d'imbriquer un formulaire dans
+              un autre, et le bouton d'enregistrement de la boutique ne doit pas
+              déclencher un changement d'identifiant. */}
+          <div className="pt-4 border-t border-[#E4DAC4]/60 space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F1E7] border border-[#E4DAC4]">
+              <Mail className="w-4 h-4 text-[#726C5C] shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[11px] text-[#726C5C]">
+                  Adresse de connexion actuelle
+                </p>
+                <p className="text-sm font-bold text-[#2E2C24] truncate">
+                  {email || '—'}
+                </p>
+              </div>
+            </div>
+
+            {emailEnvoye ? (
+              <div className="p-3.5 rounded-xl bg-[#E8F8EE] border border-[#BDEBD0] space-y-1.5">
+                <p className="text-xs font-bold text-[#1E7E34] flex items-center gap-1.5">
+                  <MailCheck className="w-4 h-4" />
+                  Confirmation envoyée
+                </p>
+                <p className="text-[11px] text-[#726C5C] leading-relaxed">
+                  Ouvrez le lien envoyé à{' '}
+                  <span className="font-semibold text-[#2E2C24]">{emailEnvoye}</span>{' '}
+                  pour valider le changement. Selon la configuration de votre
+                  projet, un second lien peut arriver sur votre ancienne adresse —
+                  les deux doivent alors être confirmés.
+                </p>
+                <p className="text-[11px] text-[#B98A2E] leading-relaxed">
+                  Tant que ce n&apos;est pas fait, continuez à vous connecter avec{' '}
+                  <span className="font-semibold">{email}</span>.
+                </p>
+              </div>
+            ) : null}
+
+            {emailErreur ? (
+              <p
+                role="alert"
+                className="text-xs text-[#B00020] bg-[#FCEBEC] border border-[#F5C6CB] rounded-xl px-3 py-2"
+              >
+                {emailErreur}
+              </p>
+            ) : null}
+
+            <Input
+              label="Changer d'adresse de connexion"
+              type="email"
+              inputMode="email"
+              placeholder="nouvelle-adresse@email.com"
+              value={nouvelEmail}
+              onChange={(e) => setNouvelEmail(e.target.value)}
+              leftIcon={<Mail className="w-4 h-4" />}
+              helperText="Cette adresse sert uniquement à vous connecter — vos clients ne la voient jamais."
+            />
+
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              onClick={handleChangerEmail}
+              isLoading={emailEnCours}
+              disabled={!nouvelEmail.trim()}
+            >
+              Envoyer le lien de confirmation
+            </Button>
           </div>
         </Card>
 
@@ -546,80 +614,6 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
         </div>
       </form>
 
-      {/* Compte — formulaire distinct : l'adresse de connexion ne se modifie pas
-          en enregistrant la fiche boutique, elle exige sa propre confirmation. */}
-      <Card className="space-y-4">
-        <h2 className="font-bold text-sm text-[#2E2C24] font-display border-b border-[#E4DAC4]/60 pb-2">
-          5. Compte et connexion
-        </h2>
-
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F1E7] border border-[#E4DAC4]">
-          <Mail className="w-4 h-4 text-[#726C5C] shrink-0" />
-          <div className="min-w-0">
-            <p className="text-[11px] text-[#726C5C]">Adresse de connexion actuelle</p>
-            <p className="text-sm font-bold text-[#2E2C24] truncate">
-              {email || '—'}
-            </p>
-          </div>
-        </div>
-
-        {emailEnvoye ? (
-          <div className="p-3.5 rounded-xl bg-[#E8F8EE] border border-[#BDEBD0] space-y-1.5">
-            <p className="text-xs font-bold text-[#1E7E34] flex items-center gap-1.5">
-              <MailCheck className="w-4 h-4" />
-              Confirmation envoyée
-            </p>
-            <p className="text-[11px] text-[#726C5C] leading-relaxed">
-              Ouvrez le lien envoyé à{' '}
-              <span className="font-semibold text-[#2E2C24]">{emailEnvoye}</span> pour
-              valider le changement. Selon la configuration de votre projet, un
-              second lien peut arriver sur votre ancienne adresse — les deux
-              doivent alors être confirmés.
-            </p>
-            <p className="text-[11px] text-[#B98A2E] leading-relaxed">
-              Tant que ce n&apos;est pas fait, continuez à vous connecter avec{' '}
-              <span className="font-semibold">{email}</span>.
-            </p>
-          </div>
-        ) : null}
-
-        {emailErreur ? (
-          <p
-            role="alert"
-            className="text-xs text-[#B00020] bg-[#FCEBEC] border border-[#F5C6CB] rounded-xl px-3 py-2"
-          >
-            {emailErreur}
-          </p>
-        ) : null}
-
-        <form onSubmit={handleChangerEmail} className="space-y-3">
-          <Input
-            label="Nouvelle adresse de connexion"
-            type="email"
-            inputMode="email"
-            placeholder="nouvelle-adresse@email.com"
-            value={nouvelEmail}
-            onChange={(e) => setNouvelEmail(e.target.value)}
-            leftIcon={<Mail className="w-4 h-4" />}
-            helperText="Le changement ne prend effet qu'après avoir cliqué le lien de confirmation."
-          />
-
-          <Button
-            type="submit"
-            variant="outline"
-            size="md"
-            isLoading={emailEnCours}
-            disabled={!nouvelEmail.trim()}
-          >
-            Envoyer le lien de confirmation
-          </Button>
-        </form>
-
-        <p className="text-[11px] text-[#726C5C] bg-[#FBF3DC] border border-[#EFE0B8] rounded-xl px-3 py-2 leading-relaxed">
-          Cette adresse sert uniquement à vous connecter. Vos clients ne la
-          voient jamais — ils vous joignent sur votre numéro WhatsApp.
-        </p>
-      </Card>
     </div>
   );
 };
