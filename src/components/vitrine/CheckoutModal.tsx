@@ -166,7 +166,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </p>
           </div>
 
-          <p className="text-xs sm:text-sm text-[#726C5C] bg-[#F6F1E7] p-3 rounded-xl border border-[#E4DAC4]">
+          <p className="text-xs sm:text-sm text-[#726C5C] bg-[var(--kat-fond,#F6F1E7)] p-3 rounded-xl border border-[var(--kat-bordure,#E4DAC4)]">
             WhatsApp s&apos;ouvre automatiquement pour transmettre votre panier directement à{' '}
             <strong>{profile.nom_boutique}</strong>. Si rien ne se passe, cliquez sur le bouton ci-dessous :
           </p>
@@ -191,7 +191,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Récapitulatif condensé */}
-          <div className="bg-[#F6F1E7] p-3 rounded-xl border border-[#E4DAC4] flex items-center justify-between text-xs">
+          <div className="bg-[var(--kat-fond,#F6F1E7)] p-3 rounded-xl border border-[var(--kat-bordure,#E4DAC4)] flex items-center justify-between text-xs">
             <span className="text-[#726C5C]">
               Total ({items.length} {items.length > 1 ? 'articles distincts' : 'article'}) :
             </span>

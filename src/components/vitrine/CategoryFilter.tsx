@@ -50,13 +50,13 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 "flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] p-2.5 rounded-2xl transition-all duration-200 shrink-0 border text-center group",
                 isSelected
                   ? "bg-[var(--kat-accent,#6B7A3D)] text-white border-[#54602F] shadow-sm scale-[1.02]"
-                  : "bg-[#FBF8F2] text-[#726C5C] border-[#E4DAC4] hover:border-[var(--kat-accent,#6B7A3D)]/40 hover:bg-[#F6F1E7]"
+                  : "bg-[var(--kat-surface,#FBF8F2)] text-[#726C5C] border-[var(--kat-bordure,#E4DAC4)] hover:border-[var(--kat-accent,#6B7A3D)]/40 hover:bg-[var(--kat-fond,#F6F1E7)]"
               )}
             >
               <div
                 className={cn(
                   "w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-1.5 transition-transform group-hover:scale-110",
-                  isSelected ? "bg-white/20" : "bg-[#F6F1E7] border border-[#E4DAC4]/60"
+                  isSelected ? "bg-white/20" : "bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)]/60"
                 )}
               >
                 {icon}

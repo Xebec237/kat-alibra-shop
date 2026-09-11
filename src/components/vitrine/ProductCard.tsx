@@ -34,11 +34,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isOutOfStock = !product.en_stock || product.stock <= 0;
 
   return (
-    <div className="group relative bg-[#FBF8F2] border border-[#E4DAC4] rounded-3xl overflow-hidden flex flex-col transition-all duration-200 hover:border-[#6B7A3D]/50 hover:shadow-xs">
+    <div className="group relative bg-[var(--kat-surface,#FBF8F2)] border border-[var(--kat-bordure,#E4DAC4)] rounded-3xl overflow-hidden flex flex-col transition-all duration-200 hover:border-[#6B7A3D]/50 hover:shadow-xs">
       {/* Conteneur image */}
       <div
         onClick={() => onOpenDetails(product)}
-        className="relative aspect-[4/4.5] w-full bg-[#F6F1E7] cursor-pointer overflow-hidden"
+        className="relative aspect-[4/4.5] w-full bg-[var(--kat-fond,#F6F1E7)] cursor-pointer overflow-hidden"
       >
         {product.images && product.images.length > 0 ? (
           <Image
@@ -120,7 +120,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             onClick={() => onOpenDetails(product)}
             className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:pointer-events-none ${
               isInCart
-                ? 'bg-[#EBF0DE] text-[#54602F] border border-[#6B7A3D]/40'
+                ? 'bg-[var(--kat-accent-clair,#EBF0DE)] text-[var(--kat-accent-texte,#54602F)] border border-[#6B7A3D]/40'
                 : 'bg-[var(--kat-accent,#6B7A3D)] text-white hover:bg-[var(--kat-accent-fonce,#54602F)]'
             }`}
             title="Choisir taille et couleur"

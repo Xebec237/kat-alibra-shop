@@ -50,7 +50,10 @@ export const LookbookStoryModal: React.FC<LookbookStoryModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in">
       {/* Conteneur Story format 9:16 */}
-      <div className="relative w-full max-w-sm h-[94vh] max-h-[820px] rounded-3xl overflow-hidden bg-[#2E2C24] shadow-2xl flex flex-col justify-between">
+      {/* Le cadre s'élargit avec l'écran : un format téléphone figé sur un
+          moniteur laissait deux grandes bandes noires et écrasait la photo
+          dans une colonne étroite. */}
+      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-2xl h-[94vh] max-h-[820px] lg:max-h-[88vh] rounded-3xl overflow-hidden bg-[#2E2C24] shadow-2xl flex flex-col justify-between">
         {/* Barre de progression des stories en haut */}
         <div className="absolute top-3 left-3 right-3 z-30 flex gap-1">
           {products.map((_, i) => (
@@ -66,7 +69,7 @@ export const LookbookStoryModal: React.FC<LookbookStoryModalProps> = ({
         {/* Top bar avec fermeture et badge IA / Lookbook */}
         <div className="absolute top-6 left-4 right-4 z-30 flex items-center justify-between text-white">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-[#EBF0DE]" />
+            <Sparkles className="w-3.5 h-3.5 text-[var(--kat-accent-clair,#EBF0DE)]" />
             <span>Lookbook Story</span>
           </div>
 
@@ -78,18 +81,35 @@ export const LookbookStoryModal: React.FC<LookbookStoryModalProps> = ({
           </button>
         </div>
 
-        {/* Photo plein écran */}
+        {/* Visuel de l'article */}
         <div className="absolute inset-0">
           {currentProduct.images && currentProduct.images.length > 0 ? (
-            <Image
-              src={currentProduct.images[0]}
-              alt={currentProduct.nom}
-              fill
-              className="object-cover"
-              priority
-            />
+            <>
+              {/* Copie floutée en fond : `object-contain` laisse des bandes
+                  vides dès que le format de la photo diffère de celui du cadre.
+                  Les remplir avec la photo elle-même vaut mieux qu'un aplat. */}
+              <Image
+                src={currentProduct.images[0]}
+                alt=""
+                fill
+                aria-hidden="true"
+                className="object-cover scale-110 blur-2xl opacity-50"
+                priority
+              />
+
+              {/* La photo entière, jamais rognée : un cadrage `cover` coupait
+                  les articles hauts et larges, on ne voyait qu'un morceau. */}
+              <Image
+                src={currentProduct.images[0]}
+                alt={currentProduct.nom}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 640px"
+                className="object-contain"
+                priority
+              />
+            </>
           ) : null}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/40" />
         </div>
 
         {/* Zones tactiles gauche/droite pour défiler */}
@@ -124,13 +144,13 @@ export const LookbookStoryModal: React.FC<LookbookStoryModalProps> = ({
         {/* Bas de l'écran avec Titre, Prix et Bouton Commander */}
         <div className="relative z-20 p-5 text-white space-y-3">
           <div>
-            <span className="text-xs uppercase tracking-wider text-[#EBF0DE] font-semibold block">
+            <span className="text-xs uppercase tracking-wider text-[var(--kat-accent-clair,#EBF0DE)] font-semibold block">
               {currentProduct.sizes?.join(' • ') || 'Collection Prestige'}
             </span>
             <h2 className="text-xl font-bold font-display leading-tight">
               {currentProduct.nom}
             </h2>
-            <p className="text-xl font-extrabold text-[#EBF0DE] mt-1">
+            <p className="text-xl font-extrabold text-[var(--kat-accent-clair,#EBF0DE)] mt-1">
               {formatPrice(currentProduct.prix_promo || currentProduct.prix, currency)}
             </p>
           </div>
@@ -140,7 +160,7 @@ export const LookbookStoryModal: React.FC<LookbookStoryModalProps> = ({
               onClick={handleAddToCart}
               className="flex-1 h-12 rounded-2xl bg-white text-[#2E2C24] font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition-transform"
             >
-              <ShoppingBag className="w-4 h-4 text-[#6B7A3D]" />
+              <ShoppingBag className="w-4 h-4 text-[var(--kat-accent,#6B7A3D)]" />
               <span>Ajouter au panier</span>
             </button>
           </div>

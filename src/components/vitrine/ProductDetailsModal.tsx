@@ -110,12 +110,12 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
       />
 
       {/* Conteneur de la fiche produit (Style iPhone App) */}
-      <div className="relative w-full max-w-lg bg-[#FBF8F2] border border-[#E4DAC4] rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] flex flex-col z-10 overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg bg-[var(--kat-surface,#FBF8F2)] border border-[var(--kat-bordure,#E4DAC4)] rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] flex flex-col z-10 overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-200">
         {/* Top Bar avec retour et partage */}
-        <div className="p-4 border-b border-[#E4DAC4]/60 flex items-center justify-between bg-[#FBF8F2]/90 backdrop-blur-xs sticky top-0 z-20">
+        <div className="p-4 border-b border-[var(--kat-bordure,#E4DAC4)]/60 flex items-center justify-between bg-[var(--kat-surface,#FBF8F2)]/90 backdrop-blur-xs sticky top-0 z-20">
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/40 transition-colors"
+            className="w-10 h-10 rounded-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] flex items-center justify-center text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/40 transition-colors"
             aria-label="Retour"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -127,7 +127,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
 
           <button
             onClick={handleShare}
-            className="w-10 h-10 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/40 transition-colors"
+            className="w-10 h-10 rounded-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] flex items-center justify-center text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/40 transition-colors"
             aria-label="Partager"
           >
             {copied ? <Check className="w-4 h-4 text-[#3F7D4F]" /> : <Share2 className="w-4 h-4 text-[#726C5C]" />}
@@ -137,7 +137,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
         {/* Corps défilant */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
           {/* Photo principale focalisée */}
-          <div className="relative aspect-[4/4.5] w-full rounded-3xl overflow-hidden bg-[#F6F1E7] border border-[#E4DAC4] shadow-xs">
+          <div className="relative aspect-[4/4.5] w-full rounded-3xl overflow-hidden bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] shadow-xs">
             {product.images && product.images.length > 0 ? (
               <Image
                 src={product.images[selectedImageIndex] || product.images[0]}
@@ -174,7 +174,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                   className={`relative w-16 h-16 rounded-2xl overflow-hidden border-2 shrink-0 transition-all ${
                     selectedImageIndex === idx
                       ? 'border-[var(--kat-accent,#6B7A3D)] scale-105'
-                      : 'border-[#E4DAC4] opacity-70 hover:opacity-100'
+                      : 'border-[var(--kat-bordure,#E4DAC4)] opacity-70 hover:opacity-100'
                   }`}
                 >
                   <Image src={img} alt="" fill className="object-cover" />
@@ -239,7 +239,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                       className={`min-w-[48px] h-11 px-3.5 rounded-2xl text-xs font-bold transition-all ${
                         isSelected
                           ? 'bg-[#2E2C24] text-white shadow-xs scale-105'
-                          : 'bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:border-[var(--kat-accent,#6B7A3D)]'
+                          : 'bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] text-[#2E2C24] hover:border-[var(--kat-accent,#6B7A3D)]'
                       }`}
                     >
                       {size}
@@ -296,11 +296,11 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
 
           {/* Description */}
           {product.description ? (
-            <div className="space-y-1.5 pt-2 border-t border-[#E4DAC4]/60">
+            <div className="space-y-1.5 pt-2 border-t border-[var(--kat-bordure,#E4DAC4)]/60">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#726C5C]">
                 Description du produit
               </h3>
-              <p className="text-xs sm:text-sm text-[#2E2C24] leading-relaxed whitespace-pre-line bg-[#F6F1E7]/70 p-3.5 rounded-2xl border border-[#E4DAC4]/70">
+              <p className="text-xs sm:text-sm text-[#2E2C24] leading-relaxed whitespace-pre-line bg-[var(--kat-fond,#F6F1E7)]/70 p-3.5 rounded-2xl border border-[var(--kat-bordure,#E4DAC4)]/70">
                 {product.description}
               </p>
             </div>
@@ -308,12 +308,12 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
         </div>
 
         {/* Double boutons d'action (Add to Cart + Buy Now) */}
-        <div className="p-4 sm:p-5 border-t border-[#E4DAC4] bg-[#FBF8F2] flex items-center gap-3 sticky bottom-0 z-20">
+        <div className="p-4 sm:p-5 border-t border-[var(--kat-bordure,#E4DAC4)] bg-[var(--kat-surface,#FBF8F2)] flex items-center gap-3 sticky bottom-0 z-20">
           <button
             type="button"
             disabled={isOutOfStock}
             onClick={handleAddToCart}
-            className="flex-1 h-12 rounded-2xl border-2 border-[#E4DAC4] bg-[#F6F1E7] text-[#2E2C24] font-bold text-xs sm:text-sm hover:bg-[#E4DAC4]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
+            className="flex-1 h-12 rounded-2xl border-2 border-[var(--kat-bordure,#E4DAC4)] bg-[var(--kat-fond,#F6F1E7)] text-[#2E2C24] font-bold text-xs sm:text-sm hover:bg-[var(--kat-bordure,#E4DAC4)]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
           >
             <ShoppingBag className="w-4 h-4 text-[var(--kat-accent,#6B7A3D)]" />
             <span>Ajouter au panier</span>

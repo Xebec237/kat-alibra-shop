@@ -11,16 +11,25 @@ export interface Teinte {
   bordure: string;
   /** Texte lisible posé sur le fond clair. */
   texteSurClair: string;
+  /** Fond de page de la vitrine. */
+  fond: string;
+  /** Fond des cartes et de l'en-tête, posé sur `fond`. */
+  surface: string;
+  /** Bordure des cartes, assortie à `surface`. */
+  bordureSurface: string;
 }
 
 /**
  * Nuancier de la vitrine.
  *
- * Chaque teinte embarque ses quatre déclinaisons plutôt qu'une seule couleur :
- * les dériver à la volée depuis un hexadécimal donnerait des contrastes
- * imprévisibles, et le blanc sur fond pastel devient vite illisible. Les
- * `principal` sont donc tous assez soutenus pour porter du texte blanc, même
- * quand la famille est claire.
+ * Chaque teinte embarque ses déclinaisons plutôt qu'une seule couleur : les
+ * dériver à la volée depuis un hexadécimal donnerait des contrastes
+ * imprévisibles, et du blanc sur pastel devient vite illisible.
+ *
+ * `fond`, `surface` et `bordureSurface` habillent toute la page, pas seulement
+ * les accents — choisir une teinte change l'ambiance de la boutique entière.
+ * Ces trois-là restent très désaturés : un fond franc fatigue l'œil sur une
+ * page de catalogue qu'on parcourt longuement, et écrase les photos d'articles.
  */
 export const PALETTE: Teinte[] = [
   {
@@ -31,6 +40,9 @@ export const PALETTE: Teinte[] = [
     clair: '#EBF0DE',
     bordure: '#DDE6C9',
     texteSurClair: '#54602F',
+    fond: '#F6F1E7',
+    surface: '#FBF8F2',
+    bordureSurface: '#E4DAC4',
   },
   {
     id: 'terracotta',
@@ -40,6 +52,21 @@ export const PALETTE: Teinte[] = [
     clair: '#FBECE8',
     bordure: '#F3D5CB',
     texteSurClair: '#8C3F2B',
+    fond: '#FAF1ED',
+    surface: '#FDF8F6',
+    bordureSurface: '#EDD8CE',
+  },
+  {
+    id: 'corail',
+    nom: 'Corail',
+    principal: '#C25A5A',
+    fonce: '#A24747',
+    clair: '#FBEDED',
+    bordure: '#F2D3D3',
+    texteSurClair: '#984242',
+    fond: '#FBF0F0',
+    surface: '#FEF8F8',
+    bordureSurface: '#F0D8D8',
   },
   {
     id: 'ocre',
@@ -49,6 +76,21 @@ export const PALETTE: Teinte[] = [
     clair: '#FBF3DC',
     bordure: '#EFE0B8',
     texteSurClair: '#8A6620',
+    fond: '#FAF5E8',
+    surface: '#FDFBF3',
+    bordureSurface: '#EBE0C2',
+  },
+  {
+    id: 'sable',
+    nom: 'Sable',
+    principal: '#A08150',
+    fonce: '#846A41',
+    clair: '#F7F1E6',
+    bordure: '#E8DCC6',
+    texteSurClair: '#7A6340',
+    fond: '#F8F4EC',
+    surface: '#FCFAF5',
+    bordureSurface: '#E7DECD',
   },
   {
     id: 'foret',
@@ -58,6 +100,21 @@ export const PALETTE: Teinte[] = [
     clair: '#E7F3E9',
     bordure: '#C9E3CE',
     texteSurClair: '#2E5C3A',
+    fond: '#EFF6F1',
+    surface: '#F7FCF9',
+    bordureSurface: '#D3E5D8',
+  },
+  {
+    id: 'menthe',
+    nom: 'Menthe',
+    principal: '#2E8B74',
+    fonce: '#24705D',
+    clair: '#E6F4F0',
+    bordure: '#C5E4DB',
+    texteSurClair: '#246B5A',
+    fond: '#EDF6F3',
+    surface: '#F6FCFA',
+    bordureSurface: '#D2E7E0',
   },
   {
     id: 'lagon',
@@ -67,6 +124,9 @@ export const PALETTE: Teinte[] = [
     clair: '#E4F2F5',
     bordure: '#C2E0E6',
     texteSurClair: '#245D68',
+    fond: '#EDF5F7',
+    surface: '#F6FBFC',
+    bordureSurface: '#CFE3E8',
   },
   {
     id: 'indigo',
@@ -76,6 +136,21 @@ export const PALETTE: Teinte[] = [
     clair: '#E9ECF7',
     bordure: '#CDD4EC',
     texteSurClair: '#3A4779',
+    fond: '#F0F2F9',
+    surface: '#F8F9FD',
+    bordureSurface: '#D7DCEE',
+  },
+  {
+    id: 'lavande',
+    nom: 'Lavande',
+    principal: '#7B6BA8',
+    fonce: '#63558A',
+    clair: '#F0EDF7',
+    bordure: '#DBD3EC',
+    texteSurClair: '#5E5183',
+    fond: '#F3F1F9',
+    surface: '#FAF9FD',
+    bordureSurface: '#DFD9EE',
   },
   {
     id: 'prune',
@@ -85,6 +160,9 @@ export const PALETTE: Teinte[] = [
     clair: '#F4E9F1',
     bordure: '#E3CCDC',
     texteSurClair: '#5F3852',
+    fond: '#F7F0F5',
+    surface: '#FCF7FA',
+    bordureSurface: '#E7D4E0',
   },
   {
     id: 'rose',
@@ -94,6 +172,9 @@ export const PALETTE: Teinte[] = [
     clair: '#FBEAF0',
     bordure: '#F0CEDA',
     texteSurClair: '#8E4459',
+    fond: '#FBF0F4',
+    surface: '#FEF8FA',
+    bordureSurface: '#F2D8E1',
   },
   {
     id: 'ardoise',
@@ -103,6 +184,9 @@ export const PALETTE: Teinte[] = [
     clair: '#EDEEF0',
     bordure: '#D8DADD',
     texteSurClair: '#464B52',
+    fond: '#F1F2F4',
+    surface: '#F9FAFB',
+    bordureSurface: '#DEE0E3',
   },
 ];
 
@@ -127,5 +211,8 @@ export function variablesTeinte(id?: string | null): React.CSSProperties {
     '--kat-accent-clair': t.clair,
     '--kat-accent-bordure': t.bordure,
     '--kat-accent-texte': t.texteSurClair,
+    '--kat-fond': t.fond,
+    '--kat-surface': t.surface,
+    '--kat-bordure': t.bordureSurface,
   } as React.CSSProperties;
 }

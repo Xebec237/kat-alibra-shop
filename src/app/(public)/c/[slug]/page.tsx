@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { incrementCatalogViews } from '@/lib/actions/catalogs';
+import { getCurrentProfile } from '@/lib/queries/merchant';
 import { VitrineClient } from '@/components/vitrine/VitrineClient';
 import {
   mockProfile,
@@ -155,12 +156,18 @@ export default async function VitrinePage({ params }: VitrinePageProps) {
     console.warn('Mode démo actif pour vitrine:', error);
   }
 
+  // Le marchand consulte souvent sa propre vitrine pour vérifier son rendu :
+  // on lui propose alors un retour vers ses paramètres plutôt que l'accueil.
+  const connecte = await getCurrentProfile();
+  const estProprietaire = Boolean(connecte && connecte.id === profile.id);
+
   return (
     <VitrineClient
       profile={profile}
       catalog={catalog}
       categories={categories}
       products={products}
+      estProprietaire={estProprietaire}
     />
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -23,6 +23,8 @@ interface VitrineHeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenLookbook?: () => void;
+  /** Le visiteur est le marchand propriétaire de cette boutique. */
+  estProprietaire?: boolean;
 }
 
 export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
@@ -31,17 +33,9 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
   searchQuery,
   onSearchChange,
   onOpenLookbook,
+  estProprietaire = false,
 }) => {
   const [copied, setCopied] = useState(false);
-  const [peutRevenir, setPeutRevenir] = useState(false);
-
-  // Le bouton retour n'a de sens que s'il y a une page où revenir. La vitrine
-  // s'ouvre souvent depuis un lien WhatsApp, en premier onglet : proposer un
-  // retour qui ne mène nulle part serait pire que ne rien afficher.
-  useEffect(() => {
-    setPeutRevenir(window.history.length > 1);
-  }, []);
-
   const handleShare = () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator
@@ -68,24 +62,31 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
   )}`;
 
   return (
-    <header className="bg-[#FBF8F2] border-b border-[#E4DAC4]/70 pt-4 pb-4 px-4 sm:px-6">
+    <header className="bg-[var(--kat-surface,#FBF8F2)] border-b border-[var(--kat-bordure,#E4DAC4)]/70 pt-4 pb-4 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-3.5">
         {/* Top App Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {peutRevenir ? (
-              <button
-                type="button"
-                onClick={() => window.history.back()}
-                className="w-9 h-9 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/40 transition-colors shrink-0"
-                title="Revenir à la page précédente"
-                aria-label="Retour"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-            ) : null}
+            {/* Destination explicite plutôt qu'un simple retour arrière : le
+                marchand rejoint ses réglages, le visiteur découvre KAT et peut
+                ouvrir sa propre boutique. Le retour arrière ne menait nulle
+                part quand la vitrine était ouverte depuis un lien WhatsApp. */}
+            <Link
+              href={estProprietaire ? '/parametres/boutique' : '/'}
+              className="h-9 px-2.5 sm:px-3 rounded-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] flex items-center gap-1.5 text-[#2E2C24] hover:bg-[var(--kat-accent-clair,#EBF0DE)] transition-colors shrink-0"
+              title={
+                estProprietaire
+                  ? 'Revenir à mes paramètres'
+                  : 'Aller sur KAT et créer ma boutique'
+              }
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline text-[11px] font-semibold whitespace-nowrap">
+                {estProprietaire ? 'Mes paramètres' : 'Accueil KAT'}
+              </span>
+            </Link>
 
-            <div className="relative w-11 h-11 rounded-2xl overflow-hidden border border-[#E4DAC4] bg-[#F6F1E7] shrink-0 shadow-xs">
+            <div className="relative w-11 h-11 rounded-2xl overflow-hidden border border-[var(--kat-bordure,#E4DAC4)] bg-[var(--kat-fond,#F6F1E7)] shrink-0 shadow-xs">
               {profile.logo_url ? (
                 <Image
                   src={profile.logo_url}
@@ -96,7 +97,7 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
                   priority
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#EBF0DE] text-[#54602F] font-bold text-sm font-display">
+                <div className="w-full h-full flex items-center justify-center bg-[var(--kat-accent-clair,#EBF0DE)] text-[var(--kat-accent-texte,#54602F)] font-bold text-sm font-display">
                   {profile.nom_boutique.substring(0, 2).toUpperCase()}
                 </div>
               )}
@@ -121,7 +122,7 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
               <button
                 type="button"
                 onClick={onOpenLookbook}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EBF0DE] text-[#54602F] border border-[#DDE6C9] text-xs font-semibold hover:bg-[#DDE6C9] transition-all"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--kat-accent-clair,#EBF0DE)] text-[var(--kat-accent-texte,#54602F)] border border-[var(--kat-accent-bordure,#DDE6C9)] text-xs font-semibold hover:bg-[var(--kat-accent-bordure,#DDE6C9)] transition-all"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Mode Lookbook</span>
@@ -130,7 +131,7 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
 
             <Link
               href="/recherche"
-              className="p-2.5 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:bg-[#E4DAC4]/30 transition-colors shadow-xs"
+              className="p-2.5 rounded-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/30 transition-colors shadow-xs"
               title="Chercher un article dans toutes les boutiques"
               aria-label="Rechercher dans toutes les boutiques"
             >
@@ -139,7 +140,7 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
 
             <button
               onClick={handleShare}
-              className="p-2.5 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] text-[#2E2C24] hover:bg-[#E4DAC4]/30 transition-colors shadow-xs"
+              className="p-2.5 rounded-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/30 transition-colors shadow-xs"
               title="Partager le catalogue"
               aria-label="Partager"
             >
@@ -171,7 +172,7 @@ export const VitrineHeader: React.FC<VitrineHeaderProps> = ({
             placeholder="Rechercher parmi les articles..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-[#F6F1E7] border border-[#E4DAC4] rounded-full pl-10 pr-24 py-2.5 text-xs sm:text-sm text-[#2E2C24] placeholder-[#9B9484] focus:outline-none focus:border-[var(--kat-accent,#6B7A3D)] focus:bg-[#FBF8F2] transition-colors"
+            className="w-full bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] rounded-full pl-10 pr-24 py-2.5 text-xs sm:text-sm text-[#2E2C24] placeholder-[#9B9484] focus:outline-none focus:border-[var(--kat-accent,#6B7A3D)] focus:bg-[var(--kat-surface,#FBF8F2)] transition-colors"
           />
           {onOpenLookbook ? (
             <button

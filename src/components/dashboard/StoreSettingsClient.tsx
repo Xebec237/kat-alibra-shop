@@ -207,7 +207,11 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
               </p>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-1 px-1">
+            {/* Barre continue : chaque segment montre le fond de page que la
+                teinte donnera, surmonté d'une pastille de la couleur d'accent.
+                Le marchand choisit donc une ambiance complète, pas juste une
+                couleur de bouton. */}
+            <div className="rounded-2xl overflow-hidden border border-[#E4DAC4] flex">
               {PALETTE.map((t) => {
                 const choisie = t.id === couleur;
                 return (
@@ -218,48 +222,68 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
                     title={t.nom}
                     aria-label={`Couleur ${t.nom}`}
                     aria-pressed={choisie}
-                    className={`shrink-0 w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${
-                      choisie
-                        ? 'border-[#2E2C24] scale-105'
-                        : 'border-transparent hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: t.clair }}
+                    className="relative flex-1 h-16 flex items-center justify-center transition-all hover:z-10"
+                    style={{ backgroundColor: t.fond }}
                   >
                     <span
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: t.principal }}
+                      className={`rounded-full flex items-center justify-center transition-all ${
+                        choisie ? 'w-8 h-8 ring-2 ring-offset-2' : 'w-5 h-5'
+                      }`}
+                      style={{
+                        backgroundColor: t.principal,
+                        ...(choisie
+                          ? ({
+                              '--tw-ring-color': t.fonce,
+                              '--tw-ring-offset-color': t.fond,
+                            } as React.CSSProperties)
+                          : {}),
+                      }}
                     >
-                      {choisie ? <Check className="w-3.5 h-3.5 text-white" /> : null}
+                      {choisie ? <Check className="w-4 h-4 text-white" /> : null}
                     </span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Aperçu : voir la teinte appliquée évite d'avoir à enregistrer
-                puis ouvrir la vitrine pour juger du résultat. */}
+            {/* Aperçu de l'ambiance complète : voir le rendu évite d'avoir à
+                enregistrer puis ouvrir la vitrine pour juger. */}
             <div
-              className="rounded-2xl p-3.5 flex items-center justify-between gap-3 border"
+              className="rounded-2xl p-4 border space-y-3"
               style={{
-                backgroundColor: getTeinte(couleur).clair,
-                borderColor: getTeinte(couleur).bordure,
+                backgroundColor: getTeinte(couleur).fond,
+                borderColor: getTeinte(couleur).bordureSurface,
               }}
             >
-              <div className="min-w-0">
-                <p
-                  className="text-xs font-bold truncate"
-                  style={{ color: getTeinte(couleur).texteSurClair }}
-                >
-                  {getTeinte(couleur).nom}
-                </p>
-                <p className="text-[11px] text-[#726C5C]">Aperçu d&apos;un bouton</p>
-              </div>
-              <span
-                className="shrink-0 px-4 py-2 rounded-full text-white text-xs font-bold"
-                style={{ backgroundColor: getTeinte(couleur).principal }}
+              <p className="text-[11px] font-semibold text-[#726C5C]">
+                Aperçu de votre vitrine en {getTeinte(couleur).nom.toLowerCase()}
+              </p>
+
+              <div
+                className="rounded-xl p-3 border flex items-center justify-between gap-3"
+                style={{
+                  backgroundColor: getTeinte(couleur).surface,
+                  borderColor: getTeinte(couleur).bordureSurface,
+                }}
               >
-                Commander
-              </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[#2E2C24] truncate">
+                    {nomBoutique || 'Votre boutique'}
+                  </p>
+                  <p
+                    className="text-sm font-extrabold font-display"
+                    style={{ color: getTeinte(couleur).principal }}
+                  >
+                    10 000 {devise}
+                  </p>
+                </div>
+                <span
+                  className="shrink-0 px-4 py-2 rounded-full text-white text-xs font-bold"
+                  style={{ backgroundColor: getTeinte(couleur).principal }}
+                >
+                  Commander
+                </span>
+              </div>
             </div>
           </div>
 

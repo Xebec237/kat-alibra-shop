@@ -25,7 +25,7 @@ export const HeroPromoBanner: React.FC<HeroPromoBannerProps> = ({
       type="button"
       onClick={onExplore}
       aria-label="Ouvrir le lookbook"
-      className="relative w-full text-left rounded-3xl overflow-hidden text-white p-5 sm:p-6 cursor-pointer shadow-md group border border-[#E4DAC4]/30"
+      className="relative w-full text-left rounded-3xl overflow-hidden text-white p-5 sm:p-6 cursor-pointer shadow-md group border border-[var(--kat-bordure,#E4DAC4)]/30"
       style={{
         backgroundColor: 'var(--kat-accent-fonce, #54602F)',
       }}

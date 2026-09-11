@@ -37,9 +37,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         aria-hidden="true"
       />
       
-      <div className="relative w-full max-w-md bg-[#FBF8F2] border-l border-[#E4DAC4] h-full flex flex-col z-10 shadow-2xl animate-in slide-in-from-right duration-200">
+      <div className="relative w-full max-w-md bg-[var(--kat-surface,#FBF8F2)] border-l border-[var(--kat-bordure,#E4DAC4)] h-full flex flex-col z-10 shadow-2xl animate-in slide-in-from-right duration-200">
         {/* En-tête tiroir */}
-        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#E4DAC4]">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--kat-bordure,#E4DAC4)]">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-[var(--kat-accent,#6B7A3D)]" />
             <h2 className="font-bold text-lg text-[#2E2C24] font-display">
@@ -48,7 +48,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-1.5 rounded-lg text-[#726C5C] hover:text-[#2E2C24] hover:bg-[#E4DAC4]/30 transition-colors"
+            className="p-1.5 rounded-lg text-[#726C5C] hover:text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/30 transition-colors"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="w-16 h-16 rounded-2xl bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center text-[#726C5C]">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] flex items-center justify-center text-[#726C5C]">
                 <ShoppingBag className="w-8 h-8 opacity-40" />
               </div>
               <p className="font-semibold text-[#2E2C24]">Votre panier est vide</p>
@@ -77,7 +77,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             </div>
           ) : (
             <>
-              <div className="flex justify-between items-center text-xs text-[#726C5C] pb-2 border-b border-[#E4DAC4]/40">
+              <div className="flex justify-between items-center text-xs text-[#726C5C] pb-2 border-b border-[var(--kat-bordure,#E4DAC4)]/40">
                 <span>Articles sélectionnés</span>
                 <button
                   type="button"
@@ -95,10 +95,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className="flex gap-3 bg-[#F6F1E7]/70 p-3 rounded-2xl border border-[#E4DAC4]/70"
+                    className="flex gap-3 bg-[var(--kat-fond,#F6F1E7)]/70 p-3 rounded-2xl border border-[var(--kat-bordure,#E4DAC4)]/70"
                   >
                     {/* Image miniature */}
-                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#F6F1E7] border border-[#E4DAC4] shrink-0">
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[var(--kat-fond,#F6F1E7)] border border-[var(--kat-bordure,#E4DAC4)] shrink-0">
                       {item.image ? (
                         <Image src={item.image} alt={item.nom} fill className="object-cover" />
                       ) : (
@@ -125,11 +125,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       </div>
 
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-2 bg-[#FBF8F2] border border-[#E4DAC4] rounded-lg p-0.5">
+                        <div className="flex items-center gap-2 bg-[var(--kat-surface,#FBF8F2)] border border-[var(--kat-bordure,#E4DAC4)] rounded-lg p-0.5">
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, item.quantite - 1)}
-                            className="w-6 h-6 flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/30 rounded"
+                            className="w-6 h-6 flex items-center justify-center text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/30 rounded"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
@@ -139,7 +139,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, item.quantite + 1)}
-                            className="w-6 h-6 flex items-center justify-center text-[#2E2C24] hover:bg-[#E4DAC4]/30 rounded"
+                            className="w-6 h-6 flex items-center justify-center text-[#2E2C24] hover:bg-[var(--kat-bordure,#E4DAC4)]/30 rounded"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -159,7 +159,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
         {/* Pied du panier avec total et bouton commander */}
         {items.length > 0 ? (
-          <div className="p-4 sm:p-5 border-t border-[#E4DAC4] bg-[#FBF8F2] space-y-3">
+          <div className="p-4 sm:p-5 border-t border-[var(--kat-bordure,#E4DAC4)] bg-[var(--kat-surface,#FBF8F2)] space-y-3">
             <div className="space-y-1.5 text-xs text-[#726C5C]">
               <div className="flex justify-between">
                 <span>Sous-total</span>
@@ -171,7 +171,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
             </div>
 
-            <div className="flex justify-between items-baseline pt-2 border-t border-[#E4DAC4]/60">
+            <div className="flex justify-between items-baseline pt-2 border-t border-[var(--kat-bordure,#E4DAC4)]/60">
               <span className="font-bold text-sm text-[#2E2C24]">Total estimé</span>
               <span className="font-bold text-xl text-[#2E2C24]">{formatPrice(totalAmount, currency)}</span>
             </div>

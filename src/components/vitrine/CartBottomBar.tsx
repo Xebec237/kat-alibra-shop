@@ -19,7 +19,7 @@ export const CartBottomBar: React.FC<CartBottomBarProps> = ({
   if (totalCount === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 p-3 sm:p-4 bg-[#FBF8F2]/95 backdrop-blur-md border-t border-[#E4DAC4] shadow-lg animate-in slide-in-from-bottom-5 duration-200">
+    <div className="fixed bottom-0 left-0 right-0 z-40 p-3 sm:p-4 bg-[var(--kat-surface,#FBF8F2)]/95 backdrop-blur-md border-t border-[var(--kat-bordure,#E4DAC4)] shadow-lg animate-in slide-in-from-bottom-5 duration-200">
       <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
         {/* Résumé du panier */}
         <button
@@ -27,7 +27,7 @@ export const CartBottomBar: React.FC<CartBottomBarProps> = ({
           onClick={() => setIsCartOpen(true)}
           className="flex items-center gap-3 text-left hover:opacity-80 transition-opacity"
         >
-          <div className="relative p-2.5 rounded-xl bg-[#EBF0DE] text-[#54602F]">
+          <div className="relative p-2.5 rounded-xl bg-[var(--kat-accent-clair,#EBF0DE)] text-[var(--kat-accent-texte,#54602F)]">
             <ShoppingBag className="w-5 h-5" />
             <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--kat-accent,#6B7A3D)] text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#FBF8F2]">
               {totalCount}
@@ -48,7 +48,7 @@ export const CartBottomBar: React.FC<CartBottomBarProps> = ({
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="hidden sm:inline-flex items-center justify-center px-4 py-3 rounded-xl border border-[#E4DAC4] text-xs font-semibold text-[#2E2C24] hover:bg-[#F6F1E7]"
+            className="hidden sm:inline-flex items-center justify-center px-4 py-3 rounded-xl border border-[var(--kat-bordure,#E4DAC4)] text-xs font-semibold text-[#2E2C24] hover:bg-[var(--kat-fond,#F6F1E7)]"
           >
             Voir le panier
           </button>
