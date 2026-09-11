@@ -48,6 +48,48 @@ export async function uploadProductImage(
 }
 
 /* -------------------------------------------------------------------------- */
+/* Photo de profil de la boutique                                             */
+/* -------------------------------------------------------------------------- */
+
+const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Envoie le logo de la boutique.
+ *
+ * Plus petit plafond que pour les articles : le logo est affiché en vignette de
+ * 44 pixels dans l'en-tête de la vitrine, une image lourde ralentirait chaque
+ * chargement de page sans rien apporter à l'écran.
+ */
+export async function uploadStoreLogo(
+  file: File,
+  storeId: string
+): Promise<UploadResult> {
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    return { ok: false, error: 'Format accepté : JPG, PNG, WebP ou AVIF.' };
+  }
+
+  if (file.size > LOGO_MAX_BYTES) {
+    return { ok: false, error: 'Image trop lourde (2 Mo maximum pour un logo).' };
+  }
+
+  const supabase = createClient();
+  const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  const path = `${storeId}/logo/${crypto.randomUUID()}.${extension}`;
+
+  const { error } = await supabase.storage
+    .from(PRODUCT_IMAGES_BUCKET)
+    .upload(path, file, { cacheControl: '3600', upsert: false });
+
+  if (error) return { ok: false, error: error.message };
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(PRODUCT_IMAGES_BUCKET).getPublicUrl(path);
+
+  return { ok: true, url: publicUrl };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Média du lookbook                                                          */
 /* -------------------------------------------------------------------------- */
 

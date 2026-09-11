@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { PALETTE, getTeinte } from '@/lib/theme/palette';
-import { uploadLookbookMedia } from '@/lib/supabase/storage';
+import { uploadLookbookMedia, uploadStoreLogo } from '@/lib/supabase/storage';
 import { Store, Phone, Check, Globe, MapPin, DollarSign, Image as ImageIcon } from 'lucide-react';
 import { Profile } from '@/lib/supabase/types';
 import { updateProfile } from '@/lib/actions/profile';
@@ -24,6 +24,9 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
   const [ville, setVille] = useState(profile.ville || 'Douala');
   const [adresse, setAdresse] = useState(profile.adresse || '');
   const [devise, setDevise] = useState(profile.devise || 'FCFA');
+  const [logoUrl, setLogoUrl] = useState(profile.logo_url);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const [couleur, setCouleur] = useState(profile.couleur_theme || 'olive');
   const [mediaUrl, setMediaUrl] = useState(profile.lookbook_media_url);
   const [mediaType, setMediaType] = useState(profile.lookbook_media_type);
@@ -50,6 +53,7 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
       ville,
       adresse,
       devise,
+      logo_url: logoUrl,
       couleur_theme: couleur,
       lookbook_media_url: mediaUrl,
       lookbook_media_type: mediaType,
@@ -83,6 +87,87 @@ export const StoreSettingsClient: React.FC<StoreSettingsClientProps> = ({ profil
           <h2 className="font-bold text-sm text-[#2E2C24] font-display border-b border-[#E4DAC4]/60 pb-2">
             1. Identité & Visibilité
           </h2>
+
+          {/* Photo de profil */}
+          <div className="flex items-center gap-4">
+            <div className="relative w-20 h-20 rounded-2xl overflow-hidden border border-[#E4DAC4] bg-[#F6F1E7] shrink-0">
+              {logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt="Logo de la boutique"
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              ) : (
+                // Mêmes initiales que la vitrine : le marchand voit tout de
+                // suite ce que ses clients ont sous les yeux sans logo.
+                <div className="w-full h-full flex items-center justify-center bg-[#EBF0DE] text-[#54602F] font-bold text-xl font-display">
+                  {(nomBoutique || 'KA').substring(0, 2).toUpperCase()}
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 space-y-1.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#726C5C]">
+                Photo de la boutique
+              </p>
+              <p className="text-[11px] text-[#9B9484] leading-relaxed">
+                Affichée en tête de votre vitrine et dans les résultats de
+                recherche. Carrée de préférence — 2 Mo maximum.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={isUploadingLogo}
+                  className="px-3.5 py-1.5 rounded-full bg-[#6B7A3D] text-white text-xs font-bold hover:bg-[#54602F] transition-colors disabled:opacity-50"
+                >
+                  {isUploadingLogo
+                    ? 'Envoi…'
+                    : logoUrl
+                      ? 'Changer la photo'
+                      : 'Ajouter une photo'}
+                </button>
+
+                {logoUrl ? (
+                  <button
+                    type="button"
+                    onClick={() => setLogoUrl(null)}
+                    className="px-3.5 py-1.5 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] text-[#726C5C] text-xs font-bold hover:text-[#B4553C] hover:border-[#F5C6CB] transition-colors"
+                  >
+                    Retirer
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                setIsUploadingLogo(true);
+                setError(null);
+
+                const res = await uploadStoreLogo(file, profile.id);
+                setIsUploadingLogo(false);
+                if (logoInputRef.current) logoInputRef.current.value = '';
+
+                if (!res.ok) {
+                  setError(res.error);
+                  return;
+                }
+
+                setLogoUrl(res.url);
+              }}
+            />
+          </div>
 
           <Input
             label="Nom de la boutique *"

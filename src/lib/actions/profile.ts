@@ -18,6 +18,7 @@ export interface ProfileUpdateInput {
   ville?: string | null;
   adresse?: string | null;
   devise: string;
+  logo_url?: string | null;
   couleur_theme?: string;
   lookbook_media_url?: string | null;
   lookbook_media_type?: 'image' | 'video' | null;
@@ -41,6 +42,7 @@ export async function updateProfile(
     ville: input.ville?.trim() || null,
     adresse: input.adresse?.trim() || null,
     devise: input.devise,
+    logo_url: input.logo_url ?? null,
   };
 
   const champsApparence = {
