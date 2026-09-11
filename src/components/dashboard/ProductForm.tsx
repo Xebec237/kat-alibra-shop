@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Upload, Check, ImagePlus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Upload, Check, ImagePlus, Trash2, Sparkles, ExternalLink } from 'lucide-react';
 import { Category, Product, Profile } from '@/lib/supabase/types';
 import { createProduct, updateProduct } from '@/lib/actions/products';
 import { uploadProductImage } from '@/lib/supabase/storage';
@@ -38,6 +38,60 @@ export const ProductForm: React.FC<ProductFormProps> = ({ categories, profile, p
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [iaEnCours, setIaEnCours] = useState(false);
+  const [iaSources, setIaSources] = useState<string[]>([]);
+
+  /**
+   * Complète le nom et la description à partir de quelques mots.
+   *
+   * On n'écrase jamais une description déjà rédigée sans prévenir : le marchand
+   * a pu y mettre des précisions que l'assistant n'a aucun moyen de connaître.
+   */
+  const handleAssistant = async () => {
+    const indice = nom.trim();
+    if (indice.length < 3) {
+      setError("Écrivez d'abord quelques mots dans le nom, l'assistant partira de là.");
+      return;
+    }
+
+    if (
+      description.trim() &&
+      !confirm('Remplacer la description que vous avez déjà écrite ?')
+    ) {
+      return;
+    }
+
+    setIaEnCours(true);
+    setError(null);
+    setIaSources([]);
+
+    try {
+      const res = await fetch('/api/ia/article', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          indice,
+          categorie: categories.find((c) => c.id === categoryId)?.nom ?? '',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "L'assistant n'a pas répondu.");
+        return;
+      }
+
+      setNom(data.nom);
+      setDescription(data.description);
+      setIaSources(Array.isArray(data.sources) ? data.sources : []);
+    } catch {
+      setError('Connexion perdue pendant la recherche. Réessayez.');
+    } finally {
+      setIaEnCours(false);
+    }
+  };
 
   const handleAddImageUrl = () => {
     if (imageUrl.trim()) {
@@ -150,11 +204,70 @@ export const ProductForm: React.FC<ProductFormProps> = ({ categories, profile, p
 
           <Input
             label="Nom du produit *"
-            placeholder="Ex: Robe de Soirée Satin Émeraude"
+            placeholder="Ex: cartable rebecca bonbon violet"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
             required
           />
+
+          {/* Assistant de rédaction */}
+          <div className="rounded-2xl bg-[#EBF0DE]/50 border border-[#DDE6C9] p-3.5 space-y-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-[#54602F] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Assistant de rédaction
+                </p>
+                <p className="text-[11px] text-[#726C5C] mt-0.5 leading-relaxed">
+                  Écrivez quelques mots ci-dessus, l&apos;assistant cherche
+                  l&apos;article sur internet, retrouve son nom exact et rédige
+                  la description.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAssistant}
+                disabled={iaEnCours}
+                className="shrink-0 px-3.5 py-2 rounded-full bg-[#6B7A3D] text-white text-xs font-bold hover:bg-[#54602F] transition-colors disabled:opacity-60 inline-flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {iaEnCours ? 'Recherche…' : 'Compléter'}
+              </button>
+            </div>
+
+            {iaSources.length > 0 ? (
+              <div className="pt-2 border-t border-[#DDE6C9] space-y-1">
+                {/* Les sources restent affichées : une description rédigée
+                    d'après le web se vérifie, elle ne se croit pas sur parole. */}
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#726C5C]">
+                  Pages consultées — vérifiez avant de publier
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {iaSources.map((url) => (
+                    <a
+                      key={url}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] text-[#54602F] bg-[#FBF8F2] border border-[#DDE6C9] rounded-full px-2 py-0.5 hover:border-[#6B7A3D] transition-colors max-w-[200px]"
+                    >
+                      <span className="truncate">
+                        {(() => {
+                          try {
+                            return new URL(url).hostname.replace(/^www\./, '');
+                          } catch {
+                            return url;
+                          }
+                        })()}
+                      </span>
+                      <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <div className="space-y-1.5 text-left">
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#726C5C]">
