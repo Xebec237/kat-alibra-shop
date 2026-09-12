@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { VITRINE_DEMO } from '@/lib/landing/vitrine-demo';
+import { MotsAnimes, Apparition } from '@/components/landing/Animations';
 import { formatPrice } from '@/lib/utils/formatters';
 import { PhoneMockup } from '@/components/landing/PhoneMockup';
 
@@ -59,6 +60,14 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F6F1E7] text-[#2E2C24]">
+      {/* Autorise les animations. Exécuté pendant l'analyse du document, donc
+          avant le premier affichage : aucun clignotement. Tant que cette ligne
+          n'a pas tourné, tous les textes restent visibles. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: "document.documentElement.classList.add('kat-anim')",
+        }}
+      />
       {/* ---------------------------------------------------------------- */}
       {/* Navigation                                                        */}
       {/* ---------------------------------------------------------------- */}
@@ -106,25 +115,34 @@ export default function HomePage() {
       {/* ---------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pt-16 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
         <div className="space-y-6 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF0DE] border border-[#DDE6C9] text-xs font-semibold text-[#54602F]">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Pensé pour les commerçants d&apos;Afrique francophone</span>
-          </div>
+          <Apparition>
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF0DE] border border-[#DDE6C9] text-xs font-semibold text-[#54602F]">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Pensé pour les commerçants d&apos;Afrique francophone</span>
+            </span>
+          </Apparition>
 
           <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold font-display tracking-tight leading-[1.08]">
-            Votre boutique en ligne.
+            <MotsAnimes texte="Votre boutique en ligne." immediat />
             <br />
-            <span className="text-[#6B7A3D]">Vos commandes sur WhatsApp.</span>
+            <MotsAnimes
+              texte="Vos commandes sur WhatsApp."
+              decalage={4}
+              immediat
+              className="text-[#6B7A3D]"
+            />
           </h1>
 
-          <p className="text-sm sm:text-base text-[#726C5C] leading-relaxed max-w-lg mx-auto lg:mx-0">
-            Créez un catalogue que vos clients parcourent comme une vraie
-            application, et recevez leurs commandes déjà rédigées — articles,
-            tailles, adresse, total. Fini les captures d&apos;écran et les
-            «&nbsp;c&apos;est combien&nbsp;?&nbsp;» à répétition.
-          </p>
+          <Apparition delai={260}>
+            <p className="text-sm sm:text-base text-[#726C5C] leading-relaxed max-w-lg mx-auto lg:mx-0">
+              Créez un catalogue que vos clients parcourent comme une vraie
+              application, et recevez leurs commandes déjà rédigées — articles,
+              tailles, adresse, total. Fini les captures d&apos;écran et les
+              «&nbsp;c&apos;est combien&nbsp;?&nbsp;» à répétition.
+            </p>
+          </Apparition>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-1">
+          <Apparition delai={420} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-1">
             <Link
               href="/register"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#6B7A3D] text-white px-7 h-13 py-3.5 text-sm font-bold hover:bg-[#54602F] transition-colors shadow-sm"
@@ -139,20 +157,20 @@ export default function HomePage() {
             >
               <span>Parcourir les boutiques</span>
             </Link>
-          </div>
+          </Apparition>
 
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-2 text-xs text-[#726C5C]">
+          <Apparition delai={560} className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-2 text-xs text-[#726C5C]">
             {['Sans commission', 'Sans mot de passe', 'Prêt en 5 minutes'].map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#6B7A3D]" />
                 {t}
               </span>
             ))}
-          </div>
+          </Apparition>
 
           {/* Entrée acheteur : tout le monde n'arrive pas ici pour ouvrir une
               boutique, beaucoup viennent chercher un article. */}
-          <div className="pt-4 border-t border-[#E4DAC4] space-y-2">
+          <Apparition delai={700} className="pt-4 border-t border-[#E4DAC4] space-y-2">
             <p className="text-xs font-semibold text-[#726C5C]">
               Vous cherchez plutôt à acheter ?
             </p>
@@ -176,11 +194,11 @@ export default function HomePage() {
                 Chercher
               </button>
             </form>
-          </div>
+          </Apparition>
         </div>
 
         {/* Aperçu de vitrine — boutique de démonstration */}
-        <div className="relative">
+        <Apparition delai={200} className="relative">
           <PhoneMockup
             nomBoutique={showcase.nomBoutique}
             ville={showcase.ville}
@@ -190,7 +208,7 @@ export default function HomePage() {
             Exemple de vitrine —{' '}
             <span className="font-semibold text-[#726C5C]">{showcase.nomBoutique}</span>
           </p>
-        </div>
+        </Apparition>
       </section>
 
       {/* ---------------------------------------------------------------- */}
@@ -222,7 +240,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
         <div className="text-center space-y-3 mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
-            Ce que votre client voit
+            <MotsAnimes texte="Ce que votre client voit" />
           </h2>
           <p className="text-sm text-[#726C5C] max-w-xl mx-auto">
             Une fiche article soignée, qui donne envie d&apos;acheter et répond
@@ -231,7 +249,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
-          <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FBF8F2] border border-[#E4DAC4] shadow-sm">
+          <Apparition className="relative aspect-square rounded-3xl overflow-hidden bg-[#FBF8F2] border border-[#E4DAC4] shadow-sm">
             <Image
               src={vedette.images[0]}
               alt={vedette.nom}
@@ -239,9 +257,9 @@ export default function HomePage() {
               sizes="(max-width: 768px) 100vw, 400px"
               className="object-cover"
             />
-          </div>
+          </Apparition>
 
-          <div className="space-y-4">
+          <Apparition delai={180} className="space-y-4">
             <h3 className="text-xl font-bold font-display leading-tight">
               {vedette.nom}
             </h3>
@@ -305,7 +323,7 @@ export default function HomePage() {
                 Commander
               </span>
             </div>
-          </div>
+          </Apparition>
         </div>
       </section>
 
@@ -316,7 +334,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
           <div className="text-center space-y-3 mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
-              Trois étapes, et vous vendez
+              <MotsAnimes texte="Trois étapes, et vous vendez" />
             </h2>
             <p className="text-sm text-[#726C5C]">
               Pas de site à construire, pas de technicien à payer.
@@ -327,8 +345,9 @@ export default function HomePage() {
             {ETAPES.map((e, i) => {
               const Icone = e.icone;
               return (
-                <div
+                <Apparition
                   key={e.titre}
+                  delai={i * 130}
                   className="relative rounded-3xl bg-[#F6F1E7] border border-[#E4DAC4] p-6 space-y-3"
                 >
                   <span className="absolute top-5 right-5 text-3xl font-extrabold font-display text-[#E4DAC4]">
@@ -339,7 +358,7 @@ export default function HomePage() {
                   </div>
                   <h3 className="font-bold font-display text-base">{e.titre}</h3>
                   <p className="text-xs text-[#726C5C] leading-relaxed">{e.texte}</p>
-                </div>
+                </Apparition>
               );
             })}
           </div>
@@ -356,7 +375,7 @@ export default function HomePage() {
 
           <div className="relative z-10 space-y-5">
             <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-white leading-tight">
-              Votre première vente vous attend
+              <MotsAnimes texte="Votre première vente vous attend" />
             </h2>
             <p className="text-sm text-[#EBF0DE] max-w-md mx-auto leading-relaxed">
               Ouvrez votre boutique en cinq minutes et partagez votre lien dès

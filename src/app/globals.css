@@ -64,3 +64,89 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6B7A3D;
 }
+
+/* ------------------------------------------------------------------ */
+/* Animations d'apparition au défilement                               */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Tout est visible par défaut. L'état caché n'existe que sous `.kat-anim`,
+ * une classe posée sur <html> par un script exécuté avant le premier
+ * affichage. Si le JavaScript est coupé, échoue ou n'a pas fini de démarrer,
+ * le texte reste simplement lisible : une panne d'animation ne peut pas
+ * effacer la page d'accueil.
+ */
+
+.kat-anim .kat-mot {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  filter: blur(5px);
+  transition:
+    opacity 0.45s ease-out,
+    transform 0.45s cubic-bezier(0.22, 0.8, 0.28, 1),
+    filter 0.45s ease-out;
+}
+
+.kat-anim [data-anime='vu'] .kat-mot {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.kat-anim .kat-apparition {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s cubic-bezier(0.22, 0.8, 0.28, 1);
+}
+
+.kat-anim .kat-apparition[data-anime='vu'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Curseur du texte qui s'écrit. */
+.kat-curseur {
+  display: inline-block;
+  width: 1px;
+  animation: kat-clignote 1.1s steps(2, start) infinite;
+}
+
+@keyframes kat-clignote {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/*
+ * Le flou coûte cher à composer. Sur les petits écrans — souvent les
+ * téléphones les plus modestes, qui sont précisément notre public — on garde
+ * le glissement et le fondu, qui eux ne coûtent rien.
+ */
+@media (max-width: 640px) {
+  .kat-anim .kat-mot {
+    filter: none;
+  }
+}
+
+/* Mouvement réduit demandé par le système : on affiche, sans transition. */
+@media (prefers-reduced-motion: reduce) {
+  .kat-anim .kat-mot,
+  .kat-anim .kat-apparition {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .kat-curseur {
+    animation: none;
+    opacity: 0;
+  }
+}

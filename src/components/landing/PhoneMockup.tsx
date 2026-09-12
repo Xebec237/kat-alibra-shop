@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Search, Sparkles, Heart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils/formatters';
+import { TexteQuiSecrit } from '@/components/landing/TexteQuiSecrit';
 import type { Product } from '@/lib/supabase/types';
 
 interface PhoneMockupProps {
@@ -9,6 +10,9 @@ interface PhoneMockupProps {
   ville: string | null;
   produits: Product[];
 }
+
+/** Ce que le curseur tape tout seul dans la barre de recherche. */
+const RECHERCHES = ['sac à main', 'robe de soirée', 'escarpins', 'montre femme'];
 
 const CATEGORIES = [
   { nom: 'Sacs', emoji: '👜' },
@@ -61,7 +65,7 @@ export const PhoneMockup: React.FC<PhoneMockupProps> = ({
             {/* Recherche */}
             <div className="flex items-center gap-1.5 bg-[#FBF8F2] border border-[#E4DAC4] rounded-full px-2.5 py-1.5">
               <Search className="w-3 h-3 text-[#9B9484] shrink-0" />
-              <span className="text-[9px] text-[#9B9484]">Rechercher un article…</span>
+              <TexteQuiSecrit termes={RECHERCHES} className="text-[9px] text-[#9B9484]" />
             </div>
 
             {/* Bandeau promotionnel */}
