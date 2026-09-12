@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { incrementCatalogViews } from '@/lib/actions/catalogs';
@@ -18,7 +19,7 @@ interface VitrinePageProps {
 export async function generateMetadata({ params }: VitrinePageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  let profile = demoProfileForSlug(slug);
+  let profile = isSupabaseConfigured ? null : demoProfileForSlug(slug);
   const catalog = mockCatalog;
 
   // Sans identifiants Supabase réels, on reste en mode démo : inutile de partir
@@ -38,6 +39,14 @@ export async function generateMetadata({ params }: VitrinePageProps): Promise<Me
     } catch {
       // Utilisation des données par défaut
     }
+  }
+
+  if (!profile) {
+    return {
+      title: 'Boutique introuvable — KAT',
+      description: "Cette boutique n'existe pas ou n'est plus en ligne.",
+      robots: { index: false },
+    };
   }
 
   const title = `${profile.nom_boutique} — Catalogue en ligne sur KAT`;
@@ -65,8 +74,12 @@ export async function generateMetadata({ params }: VitrinePageProps): Promise<Me
 }
 
 /**
- * Profil de démonstration personnalisé avec le slug demandé, utilisé quand
- * aucune boutique réelle n'est trouvée (ou que Supabase n'est pas configuré).
+ * Profil de démonstration, réservé au mode hors ligne.
+ *
+ * N'est utilisé que lorsque aucun projet Supabase n'est branché. Le servir
+ * quand la base répond fabriquerait des boutiques inexistantes : une adresse
+ * inventée afficherait un catalogue plausible et un bouton WhatsApp pointant
+ * vers un numéro qui n'appartient à personne.
  */
 function demoProfileForSlug(slug: string) {
   if (slug === 'douala-chic' || slug === 'demo') return mockProfile;
@@ -85,6 +98,7 @@ export default async function VitrinePage({ params }: VitrinePageProps) {
   const { slug } = await params;
 
   let profile = demoProfileForSlug(slug);
+  let trouvee = false;
   let catalog = mockCatalog;
   let categories = mockCategories;
   let products = mockProducts;
@@ -114,6 +128,7 @@ export default async function VitrinePage({ params }: VitrinePageProps) {
 
     if (storeData && !storeError) {
       profile = storeData;
+      trouvee = true;
 
       // 2. Récupération des catégories
       const { data: catData } = await supabase
@@ -155,6 +170,9 @@ export default async function VitrinePage({ params }: VitrinePageProps) {
   } catch (error) {
     console.warn('Mode démo actif pour vitrine:', error);
   }
+
+  // Adresse inconnue : une page « introuvable », jamais un catalogue inventé.
+  if (!trouvee) notFound();
 
   // Le marchand consulte souvent sa propre vitrine pour vérifier son rendu :
   // on lui propose alors un retour vers ses paramètres plutôt que l'accueil.
