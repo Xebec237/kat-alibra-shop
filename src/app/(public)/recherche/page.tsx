@@ -7,12 +7,12 @@ import {
   Store,
   MapPin,
   MessageCircle,
-  ArrowLeft,
   TrendingDown,
   PackageSearch,
 } from 'lucide-react';
 import { rechercher } from '@/lib/queries/recherche';
 import { formatPrice, cleanWhatsAppNumber } from '@/lib/utils/formatters';
+import { MarqueKat } from '@/components/brand/LogoKat';
 
 export const metadata: Metadata = {
   title: 'Rechercher un article ou une boutique — KAT',
@@ -45,12 +45,14 @@ export default async function RecherchePage({ searchParams }: RecherchePageProps
       <header className="bg-[#FBF8F2] border-b border-[#E4DAC4] sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 space-y-3.5">
           <div className="flex items-center gap-3">
+            {/* Un seul retour vers l'accueil : le logo le signale aussi bien
+                qu'une flèche, et signe la page au passage. */}
             <Link
               href="/"
-              className="w-9 h-9 rounded-full bg-[#F6F1E7] border border-[#E4DAC4] flex items-center justify-center hover:bg-[#E4DAC4]/40 transition-colors shrink-0"
-              aria-label="Retour à l'accueil"
+              className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shadow-xs shrink-0 hover:bg-[#54602F] transition-colors"
+              aria-label="Retour à l'accueil KAT"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <MarqueKat className="w-6 h-6" />
             </Link>
             <div className="min-w-0">
               <h1 className="text-base sm:text-lg font-bold font-display leading-tight">
