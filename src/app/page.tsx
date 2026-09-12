@@ -1,4 +1,5 @@
 import React from 'react';
+import { MarqueKat } from '@/components/brand/LogoKat';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -66,9 +67,9 @@ export default async function HomePage() {
       <header className="border-b border-[#E4DAC4] bg-[#F6F1E7]/85 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-lg shadow-xs">
-              K
-            </div>
+            <span className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shadow-xs shrink-0">
+              <MarqueKat className="w-6 h-6" />
+            </span>
             <span className="font-bold font-display text-xl tracking-tight">KAT</span>
           </Link>
 
@@ -400,9 +401,9 @@ export default async function HomePage() {
       <footer className="border-t border-[#E4DAC4] bg-[#FBF8F2]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-sm">
-              K
-            </div>
+            <span className="w-8 h-8 rounded-lg bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shrink-0">
+              <MarqueKat className="w-5 h-5" />
+            </span>
             <span className="text-xs text-[#726C5C]">
               KAT — Vendez proprement sur WhatsApp
             </span>

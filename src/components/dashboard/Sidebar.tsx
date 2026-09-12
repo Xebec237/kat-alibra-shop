@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { MarqueKat } from '@/components/brand/LogoKat';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -69,9 +70,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, estAdmin = false }) =
       {/* Mobile Top Bar */}
       <div className="lg:hidden flex items-center justify-between p-4 bg-[#FBF8F2] border-b border-[#E4DAC4] sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-sm">
-            K
-          </div>
+          <span className="w-8 h-8 rounded-xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shrink-0">
+            <MarqueKat className="w-5 h-5" />
+          </span>
           {/* L'application s'appelle KAT ; le nom de la boutique a sa place en
               bas de la barre, à côté de son logo, pas dans l'identité du produit. */}
           <span className="font-bold font-display text-base text-[#2E2C24]">
@@ -105,9 +106,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ profile, estAdmin = false }) =
         {/* Brand */}
         <div className="p-5 border-b border-[#E4DAC4] flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-lg shadow-xs">
-              K
-            </div>
+            <span className="w-9 h-9 rounded-xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shadow-xs shrink-0">
+              <MarqueKat className="w-6 h-6" />
+            </span>
             <div>
               <span className="font-bold font-display text-lg tracking-tight text-[#2E2C24]">
                 KAT

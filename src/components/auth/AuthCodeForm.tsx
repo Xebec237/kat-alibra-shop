@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { MarqueKat } from '@/components/brand/LogoKat';
 import Link from 'next/link';
 import { Mail, MessageCircle, Store, ArrowRight, ArrowLeft, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -104,9 +105,9 @@ export const AuthCodeForm: React.FC<AuthCodeFormProps> = ({
         {/* Logo */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-xl shadow-xs">
-              K
-            </div>
+            <span className="w-10 h-10 rounded-2xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shadow-xs shrink-0">
+              <MarqueKat className="w-7 h-7" />
+            </span>
             <span className="font-bold font-display text-2xl tracking-tight text-[#2E2C24]">
               KAT
             </span>

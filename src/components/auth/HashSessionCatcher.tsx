@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { MarqueKat } from '@/components/brand/LogoKat';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -57,9 +58,9 @@ export function HashSessionCatcher() {
 
   return (
     <div className="fixed inset-0 z-50 bg-[#F6F1E7] flex flex-col items-center justify-center gap-3">
-      <div className="w-10 h-10 rounded-2xl bg-[#6B7A3D] text-white flex items-center justify-center font-bold font-display text-lg">
-        K
-      </div>
+      <span className="w-10 h-10 rounded-2xl bg-[#6B7A3D] text-[#F7F2E2] flex items-center justify-center shrink-0">
+        <MarqueKat className="w-7 h-7" />
+      </span>
       <p className="text-sm font-semibold text-[#2E2C24]">Connexion en cours…</p>
     </div>
   );
