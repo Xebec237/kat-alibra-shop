@@ -28,62 +28,61 @@ export interface OrderDetails {
 }
 
 /**
- * Construit le texte de commande lisible et structuré pour WhatsApp
+ * Construit le message de commande envoyé au marchand sur WhatsApp.
+ *
+ * Le message est volontairement dépouillé. WhatsApp n'affiche ni tableaux ni
+ * filets de séparation : les lignes de tirets de l'ancienne version se
+ * repliaient au milieu sur un écran de téléphone et noyaient l'information.
+ * Ne restent que le gras, qui lui est rendu, et les sauts de ligne.
+ *
+ * La photo est une adresse seule en dernière ligne. WhatsApp ne sait pas
+ * joindre un fichier à un lien de conversation — c'est une limite de son
+ * protocole, pas un oubli — mais il fabrique un aperçu du premier lien qu'il
+ * rencontre, et l'article apparaît alors en image au-dessus du texte.
  */
 export function buildWhatsAppOrderText(order: OrderDetails): string {
-  const currency = order.currency || 'FCFA';
+  const devise = order.currency || 'FCFA';
+  const lignes: string[] = [`*Commande ${order.reference}*`, ''];
 
-  const lines: string[] = [
-    `🛍️ *NOUVELLE COMMANDE — ${order.reference}*`,
-    `--------------------------------`,
-    `👤 *Client :* ${order.customerName}`,
-    `📞 *Téléphone :* ${order.customerPhone}`,
-  ];
+  for (const article of order.items) {
+    const prix =
+      article.prix_promo && article.prix_promo > 0 ? article.prix_promo : article.prix;
 
-  if (order.deliveryAddress && order.deliveryAddress.trim()) {
-    lines.push(`📍 *Livraison :* ${order.deliveryAddress.trim()}`);
+    // Taille et couleur tiennent entre parenthèses, à la suite du nom : sur un
+    // écran étroit, une ligne par variante triplerait la longueur de la liste.
+    const variante = [article.taille, article.couleur].filter(Boolean).join(', ');
+
+    lignes.push(
+      `${article.quantite}x ${article.nom}${variante ? ` (${variante})` : ''} — ` +
+        formatPrice(prix * article.quantite, devise)
+    );
   }
 
-  lines.push(`--------------------------------`);
-  lines.push(`📦 *Articles commandés :*`);
+  lignes.push('', `*Total ${formatPrice(order.totalAmount, devise)}*`, '');
+  lignes.push(`*Client* ${order.customerName}`);
+  lignes.push(`*Tel* ${order.customerPhone}`);
 
-  // Liste des articles
-  order.items.forEach((item) => {
-    const effectivePrice = item.prix_promo && item.prix_promo > 0 ? item.prix_promo : item.prix;
-    const lineTotal = effectivePrice * item.quantite;
-    
-    let variantDetails = '';
-    if (item.taille || item.couleur) {
-      const details = [
-        item.taille ? `Taille: ${item.taille}` : null,
-        item.couleur ? `Couleur: ${item.couleur}` : null,
-      ].filter(Boolean).join(', ');
-      variantDetails = ` [${details}]`;
-    }
-
-    lines.push(`• *${item.quantite}x* ${item.nom}${variantDetails} (${formatPrice(effectivePrice, currency)}) = ${formatPrice(lineTotal, currency)}`);
-  });
-
-  lines.push(`--------------------------------`);
-  lines.push(`💰 *TOTAL À PAYER : ${formatPrice(order.totalAmount, currency)}*`);
-
-  if (order.notes && order.notes.trim()) {
-    lines.push(`📝 *Note du client :* ${order.notes.trim()}`);
+  if (order.deliveryAddress?.trim()) {
+    lignes.push(`*Livraison* ${order.deliveryAddress.trim()}`);
   }
 
-  lines.push(`--------------------------------`);
-  lines.push(`✨ *Commande passée via KAT*`);
+  if (order.notes?.trim()) {
+    lignes.push(`*Note* ${order.notes.trim()}`);
+  }
 
-  return lines.join('\n');
+  // Une seule photo, celle du premier article qui en a une : WhatsApp
+  // n'affiche l'aperçu que du premier lien, les suivants ne seraient que des
+  // adresses illisibles allongeant le message.
+  const photo = order.items.find((a) => a.image?.startsWith('https://'))?.image;
+  if (photo) lignes.push('', photo);
+
+  return lignes.join('\n');
 }
 
 /**
- * Génère le lien direct https://wa.me/... avec le texte encodé
+ * Génère le lien https://wa.me/… avec le message encodé.
  */
 export function generateWhatsAppLink(order: OrderDetails): string {
-  const phone = cleanWhatsAppNumber(order.merchantPhone);
-  const rawText = buildWhatsAppOrderText(order);
-  const encodedText = encodeURIComponent(rawText);
-
-  return `https://wa.me/${phone}?text=${encodedText}`;
+  const numero = cleanWhatsAppNumber(order.merchantPhone);
+  return `https://wa.me/${numero}?text=${encodeURIComponent(buildWhatsAppOrderText(order))}`;
 }
