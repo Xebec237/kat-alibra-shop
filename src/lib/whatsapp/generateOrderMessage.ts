@@ -27,54 +27,89 @@ export interface OrderDetails {
   currency?: string;
 }
 
+
+/** Lettres capitales à empattements, prises dans le bloc Unicode des
+ *  alphabets mathématiques. WhatsApp n'offre que le gras, l'italique et le
+ *  chasse-fixe ; c'est le seul moyen d'obtenir une autre police. */
+const CAPITALE_CHIC = 0x1d400;
+
+/**
+ * Rend un texte en capitales à empattements.
+ *
+ * Les accents sont retirés avant conversion : le bloc mathématique ne contient
+ * ni É ni Ç, et une lettre accentuée laissée telle quelle retomberait dans la
+ * police du système au milieu du mot — « MAISON ÉLÉGANCE » deviendrait un
+ * panachage disgracieux. En typographie française, la capitale non accentuée
+ * reste d'usage courant.
+ */
+function capitalesChic(texte: string): string {
+  const sansAccent = texte
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase();
+
+  let sortie = '';
+  for (const lettre of sansAccent) {
+    const code = lettre.codePointAt(0) ?? 0;
+    sortie +=
+      code >= 65 && code <= 90
+        ? String.fromCodePoint(CAPITALE_CHIC + code - 65)
+        : lettre;
+  }
+  return sortie;
+}
+
+/** Filet de séparation court. Douze traits ne se replient sur aucun écran,
+ *  là où les trente-deux tirets d'autrefois cassaient en deux lignes. */
+const FILET = '────────────';
+
 /**
  * Construit le message de commande envoyé au marchand sur WhatsApp.
  *
- * Le message est volontairement dépouillé. WhatsApp n'affiche ni tableaux ni
- * filets de séparation : les lignes de tirets de l'ancienne version se
- * repliaient au milieu sur un écran de téléphone et noyaient l'information.
- * Ne restent que le gras, qui lui est rendu, et les sauts de ligne.
- *
- * La photo est une adresse seule en dernière ligne. WhatsApp ne sait pas
- * joindre un fichier à un lien de conversation — c'est une limite de son
- * protocole, pas un oubli — mais il fabrique un aperçu du premier lien qu'il
- * rencontre, et l'article apparaît alors en image au-dessus du texte.
+ * Aucune adresse d'image n'y figure. WhatsApp ne transporte que du texte dans
+ * un lien de conversation : une adresse de photo n'y apparaît pas comme une
+ * image mais comme un lien à ouvrir, ce qui alourdit le message sans rien
+ * montrer. Tant qu'on ne passe pas par l'API WhatsApp Business, un message de
+ * commande est un message texte, et il vaut mieux qu'il soit beau.
  */
 export function buildWhatsAppOrderText(order: OrderDetails): string {
   const devise = order.currency || 'FCFA';
-  const lignes: string[] = [`*Commande ${order.reference}*`, ''];
+
+  const lignes: string[] = [
+    capitalesChic(order.storeName),
+    `_Nouvelle commande_  ·  ${order.reference}`,
+    FILET,
+  ];
 
   for (const article of order.items) {
     const prix =
       article.prix_promo && article.prix_promo > 0 ? article.prix_promo : article.prix;
 
-    // Taille et couleur tiennent entre parenthèses, à la suite du nom : sur un
-    // écran étroit, une ligne par variante triplerait la longueur de la liste.
+    // Taille et couleur en italique, à la suite du nom : une ligne par
+    // variante doublerait la hauteur de la liste sur un écran de téléphone.
     const variante = [article.taille, article.couleur].filter(Boolean).join(', ');
 
     lignes.push(
-      `${article.quantite}x ${article.nom}${variante ? ` (${variante})` : ''} — ` +
-        formatPrice(prix * article.quantite, devise)
+      `${article.quantite}×  ${article.nom}${variante ? `  _${variante}_` : ''}` +
+        `  —  ${formatPrice(prix * article.quantite, devise)}`
     );
   }
 
-  lignes.push('', `*Total ${formatPrice(order.totalAmount, devise)}*`, '');
-  lignes.push(`*Client* ${order.customerName}`);
-  lignes.push(`*Tel* ${order.customerPhone}`);
+  lignes.push(
+    FILET,
+    `${capitalesChic('Total')}  ·  *${formatPrice(order.totalAmount, devise)}*`,
+    '',
+    `*Client*  ${order.customerName}`,
+    `*Tel*  ${order.customerPhone}`
+  );
 
   if (order.deliveryAddress?.trim()) {
-    lignes.push(`*Livraison* ${order.deliveryAddress.trim()}`);
+    lignes.push(`*Livraison*  ${order.deliveryAddress.trim()}`);
   }
 
   if (order.notes?.trim()) {
-    lignes.push(`*Note* ${order.notes.trim()}`);
+    lignes.push(`*Note*  _${order.notes.trim()}_`);
   }
-
-  // Une seule photo, celle du premier article qui en a une : WhatsApp
-  // n'affiche l'aperçu que du premier lien, les suivants ne seraient que des
-  // adresses illisibles allongeant le message.
-  const photo = order.items.find((a) => a.image?.startsWith('https://'))?.image;
-  if (photo) lignes.push('', photo);
 
   return lignes.join('\n');
 }
