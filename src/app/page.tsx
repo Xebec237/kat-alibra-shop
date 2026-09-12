@@ -14,7 +14,7 @@ import {
   Star,
   ShieldCheck,
 } from 'lucide-react';
-import { getShowcase } from '@/lib/queries/showcase';
+import { VITRINE_DEMO } from '@/lib/landing/vitrine-demo';
 import { formatPrice } from '@/lib/utils/formatters';
 import { PhoneMockup } from '@/components/landing/PhoneMockup';
 
@@ -49,15 +49,13 @@ const ETAPES = [
 ];
 
 /**
- * La page est mise en cache puis régénérée toutes les 5 minutes : sans ça, la
- * vitrine mise en avant resterait figée au moment du déploiement et
- * n'afficherait plus les nouveaux articles.
+ * La page d'accueil ne consulte plus la base : la vitrine qu'elle présente est
+ * une démonstration figée. Elle est donc rendue une fois pour toutes au
+ * déploiement, et s'affiche même si Supabase est injoignable.
  */
-export const revalidate = 300;
-
-export default async function HomePage() {
-  const showcase = await getShowcase();
-  const vedette = showcase?.produits[0];
+export default function HomePage() {
+  const showcase = VITRINE_DEMO;
+  const vedette = showcase.produits[0];
 
   return (
     <div className="min-h-screen bg-[#F6F1E7] text-[#2E2C24]">
@@ -74,14 +72,12 @@ export default async function HomePage() {
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {showcase ? (
-              <Link
-                href={`/c/${showcase.slug}`}
-                className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors hidden sm:block"
-              >
-                Voir une boutique
-              </Link>
-            ) : null}
+            <Link
+              href="/recherche"
+              className="text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors hidden sm:block"
+            >
+              Voir les boutiques
+            </Link>
             <Link
               href="/recherche"
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#726C5C] hover:text-[#2E2C24] transition-colors px-2"
@@ -137,14 +133,12 @@ export default async function HomePage() {
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            {showcase ? (
-              <Link
-                href={`/c/${showcase.slug}`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] px-7 py-3.5 text-sm font-bold text-[#2E2C24] hover:bg-[#EBF0DE] hover:border-[#DDE6C9] transition-colors"
-              >
-                <span>Voir un exemple réel</span>
-              </Link>
-            ) : null}
+            <Link
+              href="/recherche"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] px-7 py-3.5 text-sm font-bold text-[#2E2C24] hover:bg-[#EBF0DE] hover:border-[#DDE6C9] transition-colors"
+            >
+              <span>Parcourir les boutiques</span>
+            </Link>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center lg:justify-start pt-2 text-xs text-[#726C5C]">
@@ -185,25 +179,18 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Aperçu de vitrine — alimenté par une vraie boutique */}
-        {showcase ? (
-          <div className="relative">
-            <PhoneMockup
-              nomBoutique={showcase.nomBoutique}
-              ville={showcase.ville}
-              produits={showcase.produits}
-            />
-            <p className="text-center text-[11px] text-[#9B9484] mt-6">
-              Boutique réelle sur KAT —{' '}
-              <Link
-                href={`/c/${showcase.slug}`}
-                className="font-semibold text-[#6B7A3D] hover:underline"
-              >
-                {showcase.nomBoutique}
-              </Link>
-            </p>
-          </div>
-        ) : null}
+        {/* Aperçu de vitrine — boutique de démonstration */}
+        <div className="relative">
+          <PhoneMockup
+            nomBoutique={showcase.nomBoutique}
+            ville={showcase.ville}
+            produits={showcase.produits}
+          />
+          <p className="text-center text-[11px] text-[#9B9484] mt-6">
+            Exemple de vitrine —{' '}
+            <span className="font-semibold text-[#726C5C]">{showcase.nomBoutique}</span>
+          </p>
+        </div>
       </section>
 
       {/* ---------------------------------------------------------------- */}
@@ -232,97 +219,95 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* Ce que voit le client                                             */}
       {/* ---------------------------------------------------------------- */}
-      {vedette ? (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="text-center space-y-3 mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
-              Ce que votre client voit
-            </h2>
-            <p className="text-sm text-[#726C5C] max-w-xl mx-auto">
-              Une fiche article soignée, qui donne envie d&apos;acheter et répond
-              aux questions avant qu&apos;elles ne soient posées.
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <div className="text-center space-y-3 mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">
+            Ce que votre client voit
+          </h2>
+          <p className="text-sm text-[#726C5C] max-w-xl mx-auto">
+            Une fiche article soignée, qui donne envie d&apos;acheter et répond
+            aux questions avant qu&apos;elles ne soient posées.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
+          <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FBF8F2] border border-[#E4DAC4] shadow-sm">
+            <Image
+              src={vedette.images[0]}
+              alt={vedette.nom}
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              className="object-cover"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold font-display leading-tight">
+              {vedette.nom}
+            </h3>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0.5">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-[#B98A2E] text-[#B98A2E]" />
+                ))}
+              </div>
+              <span className="text-xs text-[#726C5C]">Avis clients</span>
+            </div>
+
+            <p className="text-2xl font-extrabold font-display text-[#6B7A3D]">
+              {formatPrice(vedette.prix_promo ?? vedette.prix, 'FCFA')}
             </p>
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-[#FBF8F2] border border-[#E4DAC4] shadow-sm">
-              <Image
-                src={vedette.images[0]}
-                alt={vedette.nom}
-                fill
-                sizes="(max-width: 768px) 100vw, 400px"
-                className="object-cover"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold font-display leading-tight">
-                {vedette.nom}
-              </h3>
-
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-[#B98A2E] text-[#B98A2E]" />
-                  ))}
-                </div>
-                <span className="text-xs text-[#726C5C]">Avis clients</span>
-              </div>
-
-              <p className="text-2xl font-extrabold font-display text-[#6B7A3D]">
-                {formatPrice(vedette.prix_promo ?? vedette.prix, 'FCFA')}
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
+                Tailles
               </p>
-
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
-                  Tailles
-                </p>
-                <div className="flex gap-2">
-                  {['S', 'M', 'L', 'XL'].map((t, i) => (
-                    <span
-                      key={t}
-                      className={`w-9 h-9 rounded-xl border text-xs font-bold flex items-center justify-center ${
-                        i === 1
-                          ? 'bg-[#6B7A3D] text-white border-[#6B7A3D]'
-                          : 'bg-[#FBF8F2] text-[#2E2C24] border-[#E4DAC4]'
-                      }`}
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
-                  Couleurs
-                </p>
-                <div className="flex gap-2">
-                  {['#6B7A3D', '#B4553C', '#2E2C24', '#E4DAC4'].map((c, i) => (
-                    <span
-                      key={c}
-                      style={{ backgroundColor: c }}
-                      className={`w-7 h-7 rounded-full border-2 ${
-                        i === 0 ? 'border-[#2E2C24]' : 'border-[#E4DAC4]'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <span className="flex-1 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] py-3 text-xs font-bold text-center text-[#2E2C24]">
-                  Ajouter au panier
-                </span>
-                <span className="flex-1 rounded-full bg-[#25D366] py-3 text-xs font-bold text-center text-white inline-flex items-center justify-center gap-1.5">
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  Commander
-                </span>
+              <div className="flex gap-2">
+                {['S', 'M', 'L', 'XL'].map((t, i) => (
+                  <span
+                    key={t}
+                    className={`w-9 h-9 rounded-xl border text-xs font-bold flex items-center justify-center ${
+                      i === 1
+                        ? 'bg-[#6B7A3D] text-white border-[#6B7A3D]'
+                        : 'bg-[#FBF8F2] text-[#2E2C24] border-[#E4DAC4]'
+                    }`}
+                  >
+                    {t}
+                  </span>
+                ))}
               </div>
             </div>
+
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#726C5C]">
+                Couleurs
+              </p>
+              <div className="flex gap-2">
+                {['#6B7A3D', '#B4553C', '#2E2C24', '#E4DAC4'].map((c, i) => (
+                  <span
+                    key={c}
+                    style={{ backgroundColor: c }}
+                    className={`w-7 h-7 rounded-full border-2 ${
+                      i === 0 ? 'border-[#2E2C24]' : 'border-[#E4DAC4]'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <span className="flex-1 rounded-full bg-[#FBF8F2] border border-[#E4DAC4] py-3 text-xs font-bold text-center text-[#2E2C24]">
+                Ajouter au panier
+              </span>
+              <span className="flex-1 rounded-full bg-[#25D366] py-3 text-xs font-bold text-center text-white inline-flex items-center justify-center gap-1.5">
+                <MessageCircle className="w-3.5 h-3.5" />
+                Commander
+              </span>
+            </div>
           </div>
-        </section>
-      ) : null}
+        </div>
+      </section>
 
       {/* ---------------------------------------------------------------- */}
       {/* Comment ça marche                                                 */}
@@ -416,14 +401,9 @@ export default async function HomePage() {
             <Link href="/login" className="hover:text-[#2E2C24] transition-colors">
               Connexion
             </Link>
-            {showcase ? (
-              <Link
-                href={`/c/${showcase.slug}`}
-                className="hover:text-[#2E2C24] transition-colors"
-              >
-                Exemple
-              </Link>
-            ) : null}
+            <Link href="/recherche" className="hover:text-[#2E2C24] transition-colors">
+              Boutiques
+            </Link>
           </div>
         </div>
       </footer>

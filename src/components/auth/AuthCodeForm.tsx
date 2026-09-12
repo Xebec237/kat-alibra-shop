@@ -179,7 +179,7 @@ export const AuthCodeForm: React.FC<AuthCodeFormProps> = ({
                 <>
                   <Input
                     label="Nom de votre boutique *"
-                    placeholder="Ex: Alibra Shop"
+                    placeholder="Ex: Douala Chic Boutique"
                     value={nomBoutique}
                     onChange={(e) => setNomBoutique(e.target.value)}
                     leftIcon={<Store className="w-4 h-4" />}
